@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function SupplierDetails() {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
-    const [supplier, setSupplier] = useState<Supplier>()
+    const [supplier, setSupplier] = useState<any>()
     
     useEffect(() => {
         async function fetchData() {
@@ -37,8 +37,8 @@ export default function SupplierDetails() {
                 <div className="th">Description</div>
                 <div className="th">Unit Cost</div>
             </div>
-            {supplier.supplier_item?.map((item, _) => (
-                <div className="tdata grid grid-cols-4">
+            {supplier.supplier_item?.map((item: any, _: number) => (
+                <div className="tdata grid grid-cols-4" key={_}>
                     <div className="td uppercase">{ item.id }</div>
                     <div className="td">{ item.name }</div>
                     <div className="td">{ item.description }</div>

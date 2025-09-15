@@ -1,10 +1,14 @@
+import { Claim } from "@/types/claim";
 import { Supplier } from "@/types/supplier";
 import { Bookmark, Star } from "lucide-react";
 import Link from "next/link";
 
-export function SupplierCard({ supplier }: { supplier: Supplier }) {
+export function SupplierCard({ role, supplier }: { 
+    supplier: any,
+    role: string
+}) {
     return(
-        <div className="flex flex-col gap-2 rounded-lg shadow-sm bg-white p-1">
+        <div className="flex flex-col gap-2 rounded-lg shadow-sm bg-white p-1 break-inside-avoid mb-4">
             <div className="p-4 bg-orange-50 rounded-sm">
                 <div className="flex-center-y justify-between">
                     <div className="flex gap-1">
@@ -28,10 +32,10 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
                     </div>
                 </div>
                 <Link
-                    href={`/procurement/suppliers/${supplier.id}`}
+                    href={role === 'EMPLOYEE' ? `/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
                     className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
                 >
-                    View
+                    {role === 'EMPLOYEE' ? "ORDER" : "VIEW"}
                 </Link>
             </div>
         </div>

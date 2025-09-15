@@ -2,13 +2,12 @@
 import { DashboardSummary } from "@/components/custom/procurement/DashboardSummary";
 import { RecentOrders } from "@/components/custom/procurement/RecentOrders";
 import { useEffect, useState } from "react";
-import { recentProcurements } from "../../../public/mock";
 import { InvoicePreview } from "@/components/custom/procurement/InvoicePreview";
 // import { getData, postData } from "@/services/_main";
-import { UserService } from "@/services/userService";
 import supabase from "@/lib/supabase";
 import { PurchaseOrderService } from "@/services/purchaseOrderService";
 import { toast } from "sonner";
+import { ProcurementHeader } from "@/components/custom/procurement/Header";
 
 export default function Procurement() {
     const [activeDateFilter, setDateFilter] = useState("This week");
@@ -23,7 +22,7 @@ export default function Procurement() {
             try {
                 const data = await PurchaseOrderService.getAllPurchaseOrders();
                 setOrders(data);
-                setInvoice(data[0])
+                if (data) setInvoice(data[0])
             } catch(error) { toast.error(`${error}`) }
             finally { setLoading(false) }
         }
@@ -33,7 +32,7 @@ export default function Procurement() {
     if (loading) return <div>Loading</div>
     return(
         <section className="flex flex-col gap-2">
-            <div className="font-extrabold text-xl text-orange-900 uppercase">Procurement</div>
+            <ProcurementHeader label="procurement" />
             <DashboardSummary />
             <div className="grid grid-cols-5 gap-2">
                 <RecentOrders

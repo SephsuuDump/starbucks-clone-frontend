@@ -17,6 +17,31 @@ export class PurchaseOrderService {
         );
     }
 
+    static async getPurchaseOrderById(id: string) {
+        return await requestData(
+            `${url}/${id}`,
+            'GET',
+        );
+    }
+
+    static async createPurchaseOrder(po: any) {
+        return await requestData(
+            `${url}`,
+            'POST',
+            undefined,
+            po
+        );
+    }
+
+    static async getBySupplierStatus(status: any) {
+        return await requestData(
+            `${url}/get-by-supplier-status`,
+            'POST',
+            undefined,
+            status
+        );
+    }
+
     static async updateStatus(updatedStatus: Record<any, any>) {
         return await requestData(
             `${url}/update-status`,

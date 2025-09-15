@@ -52,3 +52,20 @@ export function formatTimestamptzToWords(dateString: string): string {
         day: "numeric",
     });
 }
+
+export function formatDateTime(dateString: string): string {
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        throw new Error("Invalid date string");
+    }
+
+    return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "long", // full month name
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true, // 12-hour format with AM/PM
+    });
+}

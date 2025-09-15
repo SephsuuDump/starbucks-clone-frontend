@@ -1,3 +1,4 @@
+import { formatToPeso } from "@/lib/formatter";
 import { Supplier } from "@/types/supplier";
 import { Star } from "lucide-react";
 import Image from "next/image";
@@ -5,12 +6,15 @@ import Image from "next/image";
 export function SupplierDetailsHeader({ supplier }: { supplier: Supplier }) {
     return(
         <div className="flex gap-4 p-4 bg-slate-50 rounded-md shadow-sm">
-            <Image
-                src={ supplier.logo_url }
-                alt={ supplier.name }
-                width={200}
-                height={200}
-            />
+            <div className="aspect-[16/9] overflow-hidden rounded-lg">
+                <Image
+                    src={ supplier.logo_url }
+                    alt={ supplier.name }
+                    width={200}
+                    height={200}
+                    className="object-fit"
+                />
+            </div>
             <div className="h-full">
                 <div className="font-extrabold text-xl text-orange-900 uppercase">{ supplier.name }</div>
                 <div className="text-sm text-gray-500 font-bold">{ supplier.contact }</div>
@@ -26,7 +30,7 @@ export function SupplierDetailsHeader({ supplier }: { supplier: Supplier }) {
 
             <div className="ms-auto flex gap-8">
                 <div>
-                    <div className="text-2xl font-bold scale-x-120 text-green-900">{ supplier.total_sales }</div>
+                    <div className="text-2xl font-bold scale-x-120 text-green-900">{ formatToPeso(supplier.total_sales) }</div>
                     <div className="-ml-2 text-xs font-extrabold uppercase tracking-wider">Total</div>
                     <div className="-ml-2 text-xs font-extrabold uppercase tracking-wider">Sales</div>
                 </div>

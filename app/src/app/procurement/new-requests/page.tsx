@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Badge, ProcurementBadge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { PurchaseOrderService } from "@/services/purchaseOrderService";
+import { ProcurementHeader } from "@/components/custom/procurement/Header";
 
 const weekAgo = new Date();
 weekAgo.setDate(weekAgo.getDate() - 7);
@@ -30,7 +31,7 @@ export default function NewRequests() {
     if (loading) return <div>Loading</div>
     return(
         <section className="flex flex-col gap-2">
-            <div className="font-extrabold text-xl text-orange-900 uppercase">New Requests</div>
+            <ProcurementHeader label="new requests" />
             <Input 
                 placeholder="Search for an order request" 
             />

@@ -1,17 +1,13 @@
-import supabase from "@/lib/supabase";
+import { requestData } from "./_main";
+import { BASE_URL } from "@/lib/config";
+
+const url = `${BASE_URL}/users`
 
 export class UserService {
-    static async getAllUsers() {
-        console.log(process.env.NEXT_PUBLIC_SUPABASE_URL!);
-        
-        const { data, error } = await supabase
-        .from("_users")
-        .select("*");
-
-
-        console.log(data);
-        
-
-        return data;
+    static async getSupplierByUser(id: string) {
+        return await requestData(
+            `${url}/get-by-supplier?id=${id}`,
+            'GET',
+        );
     }
 }

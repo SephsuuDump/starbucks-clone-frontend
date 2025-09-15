@@ -51,7 +51,7 @@ function Badge({
 export function ProcurementBadge({ label, className }: Props) {
   return(
     <div className={`
-        w-fit my-auto text-xs font-semibold py-0.5 px-2 rounded-md ${label === 'APPROVED' || label === 'CONFIRMED' ? "bg-green-100 text-green-900" : label === 'PENDING' || label === 'SENT' || label === 'TO REVIEW' ? "bg-orange-100 text-orange-900" : label === 'REJECTED' || label === 'CANCELLED' ? "bg-red-100 text-red-900" : "bg-blue-100 text-blue-900"}
+      ${className} w-fit my-auto text-xs font-semibold py-0.5 px-2 rounded-md ${label === 'APPROVED' || label === 'CONFIRMED' ? "bg-green-100 text-green-900" : label === 'PENDING' || label === 'SENT' || label === 'TO REVIEW' ? "bg-orange-100 text-orange-900" : label === 'REJECTED' || label === 'CANCELLED' ? "bg-red-100 text-red-900" : "bg-blue-100 text-blue-900"}
     `}>
         { label }
     </div>

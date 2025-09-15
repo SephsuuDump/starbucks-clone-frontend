@@ -7,11 +7,13 @@ import { AuthService } from "@/services/authService";
 import { AuthCredential } from "@/types/user";
 import { LoaderCircle } from "lucide-react";
 import Image from "next/image";
-import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 // import { toast } from "sonner";
 
 export default function LoginSignup() {
+    const router = useRouter();
     const [activeForm, setForm] = useState('Login');
     const [credential, setCredential] = useState<AuthCredential>({ email: '', password: '' });
     const [onProcess, setProcess] = useState(false);
@@ -32,14 +34,18 @@ export default function LoginSignup() {
                     const cookie = await AuthService.login(credential);
                     if (cookie) {
                         await AuthService.setCookies(cookie);
-                        window.location.href = "http://localhost:3000/procurement"
+                        const c = await AuthService.getCookies();
+                        toast.success(`${c}`)
+                        window.location.href = '/';
                     }  
                 }
             } else {
                 const data = await AuthService.login(credential);
                 if (data) {
                     await AuthService.setCookies(data);
-                    window.location.href = "http://localhost:3000/procurement"
+                    const c = await AuthService.getCookies();
+                    toast.success(`${c}`)
+                    window.location.href = '/';
                 }       
             }
         } catch (error) {
@@ -89,7 +95,7 @@ export default function LoginSignup() {
                     />
                     <Button
                         type="submit"
-                        disabled={ onProcess }
+                        disabled={ onProcess || !credential.email || !credential.password }
                         className="!bg-green-900 font-semibold tracking-widest uppercase hover:opacity-90"
                     >
                         {onProcess ? <><LoaderCircle className="text-white animate-spin" />{ activeForm }</> : activeForm}

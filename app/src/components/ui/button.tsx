@@ -3,17 +3,8 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { DialogClose } from "./dialog"
 import { LoaderCircle, LucideIcon } from "lucide-react"
-
-interface Props {
-  icon?: LucideIcon;
-  style?: string;
-  label: string;
-  loadingLabel: string;
-  onProcess: boolean;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>; 
-}
+import { DialogClose } from "./dialog"
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -67,17 +58,22 @@ function Button({
   )
 }
 
-function clicked() {
-  console.log();
-}
-
-export function ModalButton({ icon: Icon, style, label, loadingLabel, onProcess, onClick }: Props) {
+export function ModalButton({ type, icon: Icon, className, label, loadingLabel, onProcess, onClick }: {
+  icon?: LucideIcon;
+  type?: "submit" | "reset";
+  className?: string;
+  label: string;
+  loadingLabel: string;
+  onProcess: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>; 
+}) {
   return(
     <div className="flex-center-y justify-end gap-4">
       <DialogClose>Cancel</DialogClose>
       <Button 
+        type={ type ?? "button" }
         onClick={ onClick }
-        className={`${style} hover:opacity-90`}
+        className={`${className} hover:opacity-90`}
         disabled={ onProcess } 
         size="sm"
       >
@@ -85,9 +81,8 @@ export function ModalButton({ icon: Icon, style, label, loadingLabel, onProcess,
           onProcess ? (
             <><LoaderCircle className="text-white animate-spin" /> { loadingLabel }</>
           )
-          : <><Icon className="text-white" /> { label }</>
+          : <><Icon className="text-white" />{ label }</>
         )}
-        
       </Button>
     </div>
   );

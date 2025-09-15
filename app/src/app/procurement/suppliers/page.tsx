@@ -1,13 +1,17 @@
 "use client"
 
+import { ProcurementHeader } from "@/components/custom/procurement/Header";
 import { SupplierCard } from "@/components/custom/procurement/SupplierCard";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/use-auth";
 import { SupplierService } from "@/services/supplierService";
+import { Claim } from "@/types/claim";
 import { Supplier } from "@/types/supplier";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Suppliers() {
+    const { claims, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(true);
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
@@ -22,15 +26,16 @@ export default function Suppliers() {
         fetchData();
     }, [])
 
-    if (loading) return <div>Loading</div>
+    if (loading || authLoading) return <div>Loading</div>
     return(
         <section className="flex flex-col gap-2">
-            <div className="font-extrabold text-xl text-orange-900 uppercase">Suppliers</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ProcurementHeader label="suppliers" />
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
                 {suppliers.map((item, _) => (
                     <SupplierCard 
                         key={_} 
                         supplier={ item }
+                        role={ claims.role }
                     />
                 ))}
             </div>
