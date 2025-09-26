@@ -30,14 +30,14 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-green-50 max-w-[1440px] mx-auto`}
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-green-50 `}
             // style={{ background: 'radial-gradient(circle, hsla(29, 54%, 83%, 1) 0%, hsla(0, 0%, 99%, 1) 100%)'}}
         >
         <Toaster position="top-center" richColors={false} />
         <AuthProvider>
             <SidebarProvider className="text-black">
                 <AppSidebar />
-                    <main className="w-full py-4 px-2">
+                    <main className="w-full py-4 px-2 max-w-[1440px] mx-auto">
                     {/* <SidebarTrigger className="text-black" /> */}
                     {children}
                 </main>
