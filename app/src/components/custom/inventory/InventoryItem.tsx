@@ -6,15 +6,10 @@ import { useEffect, useState } from "react"
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService"
 import { Input } from "@/components/ui/input"
 import { AddInventory } from "./AddInventoryItem"
+import { InventoryItems } from "@/types/InventoryItem"
+import { EditInventory } from "./EditInventoryItem"
 
-export type InventoryItems = {
-    skuid : string,
-    name :string,
-    category : string,
-    unit_measurement : string,
-    cost : number,
-    description : string
-}
+
 
 type Page = {
     page : number, 
@@ -23,6 +18,9 @@ type Page = {
 
 export function InventoryItem() {
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false); 
+    const [editingSkuid, setEditingSkuid] = useState<string>(); 
     const [items, setItems] = useState<InventoryItems[]>([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState<Page>({
@@ -34,7 +32,6 @@ export function InventoryItem() {
         async function getItems() {
             try {
                 const data = await InventoryItemService.getInventoryItems(page.page, page.limit);
-                console.log(data)
                 setItems(data.data)
                 setTotalPages(data.totalPages)  
             } catch(e) {
@@ -42,11 +39,12 @@ export function InventoryItem() {
             }         
         } 
         getItems();
-    },[page] )
+    },[page, loading] )
 
     return(
         <>
         {open && <AddInventory setOpen={setOpen} />}
+        {openEdit && <EditInventory setOpenEdit={setOpenEdit} skuid={editingSkuid!} setLoading={setLoading} />}
         <div className="flex flex-col gap-6">
             
             <div>
@@ -67,8 +65,6 @@ export function InventoryItem() {
             </div>
 
             
-
-
             <div className="bg-white rounded-xl shadow-md p-8">
                 <div className="overflow-x-auto">
                     <div className="grid grid-cols-7 text-sm font-semibold text-gray-600 border-b pb-3">
@@ -95,7 +91,11 @@ export function InventoryItem() {
                         <div className="text-gray-700">{item.cost}</div>
                         <div className="text-gray-600 truncate">{item.description}</div>
                         <div className="flex gap-2 justify-center">
-                            <Button className="!bg-green-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90">
+                            <Button className="!bg-green-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
+                            onClick={() => {
+                                setEditingSkuid(item.skuid)
+                                setOpenEdit(true);
+                            }}>
                             <SquarePen className="w-4 h-4" /> Edit
                             </Button>
                             <Button className="!bg-red-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90">
