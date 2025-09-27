@@ -6,3 +6,4 @@ export type InventoryItems = {
     cost : number,
     description : string
 }
+

@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Search, SquarePen, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Funnel, Search, SquarePen, Trash2 } from "lucide-react"
 import { ProcurementHeader } from "../procurement/Header"
 import { useEffect, useState } from "react"
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService"
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { AddInventory } from "./AddInventoryItem"
 import { InventoryItems } from "@/types/InventoryItem"
 import { EditInventory } from "./EditInventoryItem"
+import DeleteInventory from "./DeleteInventoryItem"
 
 
 
@@ -20,6 +21,7 @@ export function InventoryItem() {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openEdit, setOpenEdit] = useState(false); 
+    const [openDelete, setOpenDelete] = useState(false); 
     const [editingSkuid, setEditingSkuid] = useState<string>(); 
     const [items, setItems] = useState<InventoryItems[]>([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -45,6 +47,7 @@ export function InventoryItem() {
         <>
         {open && <AddInventory setOpen={setOpen} />}
         {openEdit && <EditInventory setOpenEdit={setOpenEdit} skuid={editingSkuid!} setLoading={setLoading} />}
+        {openDelete && <DeleteInventory setOpenDelete={setOpenDelete} skuid={editingSkuid!} setLoading={setLoading} loading={loading}/>}
         <div className="flex flex-col gap-6">
             
             <div>
@@ -58,10 +61,15 @@ export function InventoryItem() {
                     </Button>
                 </div>
                
+               <div className="flex gap-3">
+                <Button className="bg-white shadow-md  hover:bg-green-200" >
+                    <Funnel className="text-black"/>
+                </Button>
                 <Button className="!bg-green-900 px-4 py-2 rounded-lg text-white shadow hover:opacity-90"
                 onClick={() => setOpen(!open)}>
                     + Add Item
                 </Button>
+               </div>
             </div>
 
             
@@ -98,7 +106,11 @@ export function InventoryItem() {
                             }}>
                             <SquarePen className="w-4 h-4" /> Edit
                             </Button>
-                            <Button className="!bg-red-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90">
+                            <Button className="!bg-red-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
+                            onClick={() => {
+                                setEditingSkuid(item.skuid)
+                                setOpenDelete(true)
+                            }}>
                             <Trash2 className="w-4 h-4" /> 
                             </Button>
                         </div>
