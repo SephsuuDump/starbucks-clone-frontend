@@ -22,9 +22,9 @@ export class InventoryItemService {
         )
     }
 
-    static async getInventoryItems(page : number, limit : number) {
+    static async getInventoryItems(page : number, limit : number, search : string,sort : string) {
     return await requestData(
-                `${url}/get-all?page=${page}&limit=${limit}`,
+                `${url}/get-all?page=${page}&limit=${limit}&search=${search}&sort=${sort}`,
                 'GET',
                 undefined,
                 undefined,

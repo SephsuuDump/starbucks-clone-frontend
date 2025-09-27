@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Funnel, Search, SquarePen, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Divide, Funnel, Search, SquarePen, Trash2 } from "lucide-react"
 import { ProcurementHeader } from "../procurement/Header"
 import { useEffect, useState } from "react"
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService"
@@ -9,6 +9,8 @@ import { AddInventory } from "./AddInventoryItem"
 import { InventoryItems } from "@/types/InventoryItem"
 import { EditInventory } from "./EditInventoryItem"
 import DeleteInventory from "./DeleteInventoryItem"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 
 
 
@@ -20,126 +22,185 @@ type Page = {
 export function InventoryItem() {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [openEdit, setOpenEdit] = useState(false); 
-    const [openDelete, setOpenDelete] = useState(false); 
-    const [editingSkuid, setEditingSkuid] = useState<string>(); 
+    const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [editingSkuid, setEditingSkuid] = useState<string>();
     const [items, setItems] = useState<InventoryItems[]>([]);
     const [totalPages, setTotalPages] = useState(0);
-    const [page, setPage] = useState<Page>({
-        page : 1,
-        limit : 10
-    })
+    const [sort, setSort] = useState<"az" | "price-asc" | "price-desc" | "category">("az");
+
+
+    const [search, setSearch] = useState(""); 
+    const [debouncedSearch, setDebouncedSearch] = useState(""); 
+
+    const [page, setPage] = useState<Page>({ page: 1, limit: 10 });
 
     useEffect(() => {
-        async function getItems() {
-            try {
-                const data = await InventoryItemService.getInventoryItems(page.page, page.limit);
-                setItems(data.data)
-                setTotalPages(data.totalPages)  
-            } catch(e) {
-                console.log(e);
-            }         
-        } 
-        getItems();
-    },[page, loading] )
+    const handler = setTimeout(() => {
+        setDebouncedSearch(search);
+    }, 500); 
 
+    return () => clearTimeout(handler);
+    }, [search]);
+
+    useEffect(() => {
+    async function getItems() {
+        try {
+        const data = await InventoryItemService.getInventoryItems(page.page, page.limit, debouncedSearch, sort);
+        setItems(data.data);
+        setTotalPages(data.totalPages);
+        } catch (e) {
+        console.log(e);
+        }
+    }
+    getItems();
+    }, [page, loading, debouncedSearch, sort]);
     return(
         <>
-        {open && <AddInventory setOpen={setOpen} />}
-        {openEdit && <EditInventory setOpenEdit={setOpenEdit} skuid={editingSkuid!} setLoading={setLoading} />}
-        {openDelete && <DeleteInventory setOpenDelete={setOpenDelete} skuid={editingSkuid!} setLoading={setLoading} loading={loading}/>}
-        <div className="flex flex-col gap-6">
-            
+            {open && <AddInventory setOpen={setOpen} />}
+            {openEdit && <EditInventory setOpenEdit={setOpenEdit} skuid={editingSkuid!} setLoading={setLoading} />}
+            {openDelete && <DeleteInventory setOpenDelete={setOpenDelete} skuid={editingSkuid!} setLoading={setLoading} loading={loading} />}
+
+            <div className="flex flex-col gap-6">
             <div>
-                <ProcurementHeader label="Inventory Item" />
+            <ProcurementHeader label="Inventory Item" />
             </div>
+
             <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">
-                <div className="flex gap-1">
-                    <Input type="text" placeholder="Search" className="w-60"/>
-                    <Button className="bg-white shadow-md hover:bg-green-200">
-                    <Search className="text-black" />
-                    </Button>
-                </div>
+            <div className="flex gap-1">
+                <Input
+                type="text"
+                placeholder="Search by name"
+                className="w-60"
+                value={search}
+                onChange={(e) => {
+                    setPage(p => ({ ...p, page: 1 })); 
+                    setSearch(e.target.value);
+                }}
+                />
+            </div>
+
+            <div className="flex gap-3">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="bg-white shadow-md hover:bg-green-200">
+                        <Funnel className="text-black" />
+                        </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent className="w-45" side="bottom" align="end" >
+                        <DropdownMenuItem className="font-light text-sm" disabled>
+                            Filter by: 
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="font-light" onClick={() =>setSort("az")}>
+                            A to Z
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="font-light" onClick={() =>setSort("category")}>
+                            Category
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="font-light" onClick={() =>setSort("price-asc")}>
+                            From lowest to Highest cost 
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="font-light" onClick={() =>setSort("price-desc")}>
+                            From highest to lowest cost 
+                        </DropdownMenuItem>
+
+                    </DropdownMenuContent>
+                </DropdownMenu>
                
-               <div className="flex gap-3">
-                <Button className="bg-white shadow-md  hover:bg-green-200" >
-                    <Funnel className="text-black"/>
+
+
+                <Button
+                className="!bg-green-900 px-4 py-2 rounded-lg text-white shadow hover:opacity-90"
+                onClick={() => setOpen(!open)}
+                >
+                + Add Item
                 </Button>
-                <Button className="!bg-green-900 px-4 py-2 rounded-lg text-white shadow hover:opacity-90"
-                onClick={() => setOpen(!open)}>
-                    + Add Item
-                </Button>
-               </div>
+            </div>
             </div>
 
-            
             <div className="bg-white rounded-xl shadow-md p-8">
-                <div className="overflow-x-auto">
-                    <div className="grid grid-cols-7 text-sm font-semibold text-gray-600 border-b pb-3">
-                        <div>SKUID</div>
-                        <div>Name</div>
-                        <div>Category</div>
-                        <div>Unit</div>
-                        <div>Cost</div>
-                        <div>Description</div>
-                        <div className="text-center">Actions</div>
+            <div className="overflow-x-auto">
+                <div className="grid grid-cols-7 text-sm font-semibold text-gray-600 border-b pb-3">
+                <div>SKUID</div>
+                <div>Name</div>
+                <div>Category</div>
+                <div>Unit</div>
+                <div>Cost</div>
+                <div>Description</div>
+                <div className="text-center">Actions</div>
+                </div>
+
+                {items.length === 0 ? (
+                    <div className="flex items-center justify-center bg-gray-50 p-4 rounded-lg">
+                        No Items founds
                     </div>
+                ) : (
+                    <>
+                        {items.map((item, index) => (
+                            <div
+                                key={index}
+                                className={`grid grid-cols-7 overflow-y-hidden items-center text-sm py-2 px-1 rounded-lg transition ${
+                                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                } hover:bg-gray-100`}
+                            >
+                                <div className="font-bold text-gray-800">{item.skuid}</div>
+                                <div className="text-gray-700">{item.name}</div>
+                                <div className="text-gray-700">{item.category}</div>
+                                <div className="text-gray-700">{item.unit_measurement}</div>
+                                <div className="text-gray-700">{item.cost}</div>
+                                <div className="text-gray-600 truncate">{item.description}</div>
+                                <div className="flex gap-2 justify-center">
+                                    <Button
+                                        className="!bg-green-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
+                                        onClick={() => {
+                                            setEditingSkuid(item.skuid);
+                                            setOpenEdit(true);
+                                        }}
+                                    >
+                                        <SquarePen className="w-4 h-4" /> Edit
+                                    </Button>
+                                    <Button
+                                        className="!bg-red-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
+                                        onClick={() => {
+                                            setEditingSkuid(item.skuid);
+                                            setOpenDelete(true);
+                                        }}
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
 
-                    {items.map((item, index) => (
-                        <div
-                        key={index}
-                        className={`grid grid-cols-7 overflow-y-hidden items-center text-sm py-2 px-1 rounded-lg transition ${
-                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        } hover:bg-gray-100`}
-                        >
-                        <div className="font-bold text-gray-800">{item.skuid}</div>
-                        <div className="text-gray-700">{item.name}</div>
-                        <div className="text-gray-700">{item.category}</div>
-                        <div className="text-gray-700">{item.unit_measurement}</div>
-                        <div className="text-gray-700">{item.cost}</div>
-                        <div className="text-gray-600 truncate">{item.description}</div>
-                        <div className="flex gap-2 justify-center">
-                            <Button className="!bg-green-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
-                            onClick={() => {
-                                setEditingSkuid(item.skuid)
-                                setOpenEdit(true);
-                            }}>
-                            <SquarePen className="w-4 h-4" /> Edit
-                            </Button>
-                            <Button className="!bg-red-600 px-3 py-1 rounded-md flex items-center gap-1 text-white hover:opacity-90"
-                            onClick={() => {
-                                setEditingSkuid(item.skuid)
-                                setOpenDelete(true)
-                            }}>
-                            <Trash2 className="w-4 h-4" /> 
-                            </Button>
-                        </div>
-                        </div>
-                    ))}
                 <div className="flex items-center gap-3 pt-5">
-                    <button
-                        disabled={page.page === 1}
-                        onClick={() => setPage(p => ({ ...p, page: p.page - 1 }))}
-                        className="p-2 rounded-md border border-gray-300 bg-white shadow-sm hover:bg-gray-100 hover:opacity-90 disabled:opacity-40"
-                    >
-                        <ChevronLeft className="w-3 h-3 text-gray-700" />
-                    </button>
+                <button
+                    disabled={page.page === 1}
+                    onClick={() => setPage(p => ({ ...p, page: p.page - 1 }))}
+                    className="p-2 rounded-md border border-gray-300 bg-white shadow-sm hover:bg-gray-100 disabled:opacity-40"
+                >
+                    <ChevronLeft className="w-3 h-3 text-gray-700" />
+                </button>
 
-                    <h1 className="text-sm font-medium text-gray-700">
-                        PAGE {page.page} of {totalPages}
-                    </h1>
+                <h1 className="text-sm font-medium text-gray-700">
+                    PAGE {page.page} of {totalPages}
+                </h1>
 
-                    <button
-                        disabled={page.page === totalPages}
-                        onClick={() => setPage(p => ({ ...p, page: p.page + 1 }))}
-                        className="p-2 rounded-md border border-gray-300 bg-white shadow-sm hover:bg-gray-100 hover:opacity-90 disabled:opacity-40"
-                    >
-                        <ChevronRight className="w-3 h-3 text-black" />
-                    </button>
+                <button
+                    disabled={page.page === totalPages}
+                    onClick={() => setPage(p => ({ ...p, page: p.page + 1 }))}
+                    className="p-2 rounded-md border border-gray-300 bg-white shadow-sm hover:bg-gray-100 disabled:opacity-40"
+                >
+                    <ChevronRight className="w-3 h-3 text-black" />
+                </button>
                 </div>
-                </div>
+                
             </div>
-        </div>
-      </>
-    )
+            </div>
+            </div>
+        </>
+);
+
 }
