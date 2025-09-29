@@ -1,10 +1,11 @@
 import { ButtonHTMLAttributes, Dispatch, SetStateAction, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ProcurementHeader } from "../procurement/Header";
+import { ProcurementHeader } from "../../procurement/Header";
 import { ModalButton } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService";
 import { toast } from "sonner";
+
 
 export default function DeleteInventory({
         setOpenDelete,

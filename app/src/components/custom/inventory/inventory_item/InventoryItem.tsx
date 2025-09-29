@@ -1,7 +1,7 @@
 'use client'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Divide, Funnel, Search, SquarePen, Trash2 } from "lucide-react"
-import { ProcurementHeader } from "../procurement/Header"
+import { ProcurementHeader } from "../../procurement/Header"
 import { useEffect, useState } from "react"
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,7 @@ import { EditInventory } from "./EditInventoryItem"
 import DeleteInventory from "./DeleteInventoryItem"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+
 
 
 

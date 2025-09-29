@@ -7,9 +7,10 @@ import { ModalButton } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { hasEmptyField } from "@/lib/utils";
-import { ProcurementHeader } from "../procurement/Header";
+import { ProcurementHeader } from "../../procurement/Header";
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService";
 import { InventoryItems } from "@/types/InventoryItem";
+
 
 export function EditInventory({
   setOpenEdit,
