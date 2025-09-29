@@ -54,6 +54,7 @@ export function InventoryItem() {
         }
     }
     getItems();
+    console.log(items)
     }, [page, loading, debouncedSearch, sort]);
     return(
         <>
@@ -121,12 +122,13 @@ export function InventoryItem() {
 
             <div className="bg-white rounded-xl shadow-md p-8">
             <div className="overflow-x-auto">
-                <div className="grid grid-cols-7 text-sm font-semibold text-gray-600 border-b pb-3">
+                <div className="grid grid-cols-8 text-sm font-semibold text-gray-600 border-b pb-3">
                 <div>SKUID</div>
                 <div>Name</div>
                 <div>Category</div>
                 <div>Unit</div>
                 <div>Cost</div>
+                <div>Required Stock</div>
                 <div>Description</div>
                 <div className="text-center">Actions</div>
                 </div>
@@ -140,7 +142,7 @@ export function InventoryItem() {
                         {items.map((item, index) => (
                             <div
                                 key={index}
-                                className={`grid grid-cols-7 overflow-y-hidden items-center text-sm py-2 px-1 rounded-lg transition ${
+                                className={`grid grid-cols-8 overflow-y-hidden items-center text-sm py-2 px-1 rounded-lg transition ${
                                     index % 2 === 0 ? "bg-gray-50" : "bg-white"
                                 } hover:bg-gray-100`}
                             >
@@ -149,6 +151,7 @@ export function InventoryItem() {
                                 <div className="text-gray-700">{item.category}</div>
                                 <div className="text-gray-700">{item.unit_measurement}</div>
                                 <div className="text-gray-700">{item.cost}</div>
+                                <div className="text-gray-600 truncate">{item.required_stock}</div>
                                 <div className="text-gray-600 truncate">{item.description}</div>
                                 <div className="flex gap-2 justify-center">
                                     <Button

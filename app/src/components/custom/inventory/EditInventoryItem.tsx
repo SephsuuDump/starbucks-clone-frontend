@@ -21,59 +21,71 @@ export function EditInventory({
   skuid: string;
 }) {
   const [onProcess, setProcess] = useState(false);
+  const [costInput, setCostInput] = useState("");
+  const [stockInput, setStockInput] = useState("");
   const [item, setItem] = useState<Partial<InventoryItems>>({
     skuid : skuid,
     name: "",
     category: "",
     unit_measurement: "",
     cost: 0,
+    required_stock : 0,
     description: "",
   });
 
-  useEffect(() => {
-    async function findBySkuid(skuid: string) {
-      const res = await InventoryItemService.findBySkuid(skuid);
-      setItem(res); 
-    }
+ useEffect(() => {
+  async function findBySkuid(skuid: string) {
+    const res = await InventoryItemService.findBySkuid(skuid);
+    setItem(res);
+    setCostInput(res.cost?.toString() ?? "");
+    setStockInput(res.required_stock?.toString() ?? "");
+  }
 
-    findBySkuid(skuid);
-  }, [skuid]);
+  findBySkuid(skuid);
+}, [skuid]);
 
-  function handleChange<K extends keyof InventoryItems>(
+
+  function handleChange(
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     const { name, value } = e.target;
     setItem((prev) => ({
       ...prev,
       skuid : skuid,
-      [name as K]: name === "cost" ? Number(value) : value,
+      [name]: name === "cost" || name === "required_stock" ? Number(value) : value,
     }));
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setProcess(true);
+  e.preventDefault();
+  setProcess(true);
 
-    try {
-      if (!item || hasEmptyField(item)) {
-        toast.error("PLEASE FILL UP ALL FIELDS");
-        setProcess(false);
-        return;
-      }
-      const data = await InventoryItemService.updateInventory(item.skuid!, item);
-  
+  try {
+    const updatedItem = {
+      ...item,
+      cost: costInput ? Number(parseFloat(costInput).toFixed(2)): 0.00,
+      required_stock: stockInput ? Number(parseFloat(stockInput).toFixed(2)) : 0.00,
+    };
 
-      if (data) {
-        toast.success("INVENTORY ITEM UPDATED SUCCESSFULLY");
-        setLoading(true);
-        setOpenEdit(false);
-      }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
-    } finally {
+    if (hasEmptyField(updatedItem)) {
+      toast.error("PLEASE FILL UP ALL FIELDS");
       setProcess(false);
+      return;
     }
+
+    const data = await InventoryItemService.updateInventory(skuid, updatedItem);
+    if (data) {
+      toast.success("INVENTORY ITEM UPDATED SUCCESSFULLY");
+      setLoading(true);
+      setOpenEdit(false);
+    }
+  } catch (error) {
+    toast.error(error instanceof Error ? error.message : String(error));
+  } finally {
+    setProcess(false);
   }
+}
+
 
   return (
     <Dialog open onOpenChange={setOpenEdit}>
@@ -107,14 +119,34 @@ export function EditInventory({
           <div className="flex items-center border border-gray-200 rounded-md shadow-xs">
             <div className="w-10 text-center">₱</div>
             <Input
-              name="cost"
-              onChange={handleChange}
-              type="number"
-              className="tracking-wider border-0 shadow-none"
-              placeholder="Cost"
-              value={item.cost ?? 0}
-            />
+            name="cost"
+            value={costInput}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+                setCostInput(value);
+              } else {
+                toast.error("Only numbers and a single dot are allowed");
+              }
+            }}
+            placeholder="Cost"
+          />
           </div>
+          <Input
+            name="required_stock"
+            value={stockInput}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (value === "" ||  /^[0-9]*\.?[0-9]*$/.test(value)) {
+                setStockInput(value);
+              } else {
+                toast.error("Only whole numbers are allowed");
+              }
+            }}
+            placeholder="Required Stock"
+          />
           <Input
             name="description"
             onChange={handleChange}

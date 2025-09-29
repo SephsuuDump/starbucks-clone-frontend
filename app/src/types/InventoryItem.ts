@@ -4,6 +4,7 @@ export type InventoryItems = {
     category : string,
     unit_measurement : string,
     cost : number,
+    required_stock : number,
     description : string
 }
 
