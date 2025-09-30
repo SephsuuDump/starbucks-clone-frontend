@@ -52,7 +52,6 @@ export function InventoryItem() {
         }
     }
     getItems();
-    console.log(items)
     }, [page, loading, debouncedSearch, sort]);
     return(
         <>

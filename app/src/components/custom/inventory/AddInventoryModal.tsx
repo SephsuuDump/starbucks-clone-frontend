@@ -17,6 +17,22 @@ interface AddInventoryModalProps {
   setLoading: (loading: boolean) => void;
 }
 
+export async function fetchAllBranchInventory (branch_id: string) {
+    let page = 1;
+    const limit = 1000; 
+    const all: Inventory[] = [];
+
+    while (true) {
+    const res = await InventoryService.getByBranch(branch_id, page, limit);
+    if (res.data.length === 0) break;
+    all.push(...res.data);
+    if (res.data.length < limit) break;
+    page++;
+    }
+
+    return all;
+}
+
 export function AddInventoryModal({ id, open, setOpen, currentInventory, setLoading }: AddInventoryModalProps) {
     const [items, setItems] = useState<any[]>([]);
     const [selectedItem, setSelectedItem] = useState<string>("");
@@ -24,21 +40,7 @@ export function AddInventoryModal({ id, open, setOpen, currentInventory, setLoad
     const [loadingItems, setLoadingItems] = useState(false);
     const [creating, setCreating] = useState(false);
     const [onProcess, setProcess] = useState(false);
-    async function fetchAllBranchInventory(branch_id: string) {
-        let page = 1;
-        const limit = 1000; 
-        const all: Inventory[] = [];
 
-        while (true) {
-        const res = await InventoryService.getByBranch(branch_id, page, limit);
-        if (res.data.length === 0) break;
-        all.push(...res.data);
-        if (res.data.length < limit) break;
-        page++;
-        }
-
-        return all;
-    }
 
     const handleQuantityChange = (value: string) => {
         if (value === "") {
