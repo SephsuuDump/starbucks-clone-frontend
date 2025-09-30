@@ -11,14 +11,11 @@ import { EditInventory } from "./EditInventoryItem"
 import DeleteInventory from "./DeleteInventoryItem"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { Page } from "@/types/page"
 
 
 
 
-type Page = {
-    page : number, 
-    limit : number
-}
 
 export function InventoryItem() {
     const [open, setOpen] = useState(false);

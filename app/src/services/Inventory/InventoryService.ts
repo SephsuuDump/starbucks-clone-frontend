@@ -54,17 +54,17 @@ export class InventoryService {
             undefined,
         )
     }
-    static async getByWarehouse(id : string ) {
+    static async getByWarehouse(id : string, page : number, limit : number) {
         return await requestData(
-            `${url}/get-by-warehouse?warehouse_id=${id}`,
+            `${url}/get-by-warehouse?warehouse_id=${id}&page=${page}&limit=${limit}`,
             'GET',
             undefined,
             undefined,
         )
     }
-    static async getByBranch(id : string ) {
+    static async getByBranch(id : string, page : number, limit : number ) {
         return await requestData(
-            `${url}/get-by-branch?branch_id=${id}`,
+            `${url}/get-by-branch?branch_id=${id}&page=${page}&limit=${limit}`,
             'GET',
             undefined,
             undefined,
