@@ -62,9 +62,9 @@ export class InventoryService {
             undefined,
         )
     }
-    static async getByBranch(id : string, page : number, limit : number ) {
+    static async getByBranch(id : string, page : number, limit : number, search : string) {
         return await requestData(
-            `${url}/get-by-branch?branch_id=${id}&page=${page}&limit=${limit}`,
+            `${url}/get-by-branch?branch_id=${id}&page=${page}&limit=${limit}&search=${search}`,
             'GET',
             undefined,
             undefined,

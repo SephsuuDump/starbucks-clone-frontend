@@ -71,6 +71,7 @@ export function BranchInventory() {
                 branch_id,
                 page.page,
                 page.limit,
+                debouncedSearch
                 );
                 setInventory(data.data);
                 setTotalPages(data.totalPages);
@@ -184,8 +185,14 @@ export function BranchInventory() {
                     <div>Required Stock </div>
                     <div className="text-center">Actions</div>
                 </div>
-
-                {inventory.map((item, i) => (
+                
+                {inventory.length === 0 ? (
+                    <div className="flex items-center justify-center bg-gray-50 p-4 rounded-lg text-gray-700 font-semibold text-sm">
+                        No Inventory found
+                    </div>
+                ) :
+                <>
+                  {inventory.map((item, i) => (
                     <div className="grid grid-cols-6 items-center text-sm py-2 px-1 rounded-lghover:bg-gray-50"
                     key={i}> 
                         <div className="font-bold text-gray-800">{item.id}</div>
@@ -212,7 +219,8 @@ export function BranchInventory() {
                         </div>
                     </div>
                 ))}
-            
+                </>
+            }
 
             <div className="flex items-center gap-3 pt-5">
                     <button
