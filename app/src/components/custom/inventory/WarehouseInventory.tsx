@@ -11,38 +11,11 @@ import { toast } from "sonner"
 import { Page } from "@/types/page"
 import DeleteInventoryModal from "./DeleteInventoryModal"
 import AddQuantityModal from "./AddQuantity"
-import { AddInventoryModal, fetchAllInventory} from "./AddInventoryModal"
+import { categorizeInventory } from "./BranchInventory"
+import { AddInventoryModal, fetchAllInventory } from "./AddInventoryModal"
 
 
-
-export function categorizeInventory(inventory: Inventory[]) {
-  const low: Inventory[] = [];
-  const warn: Inventory[] = [];
-  const attention: Inventory[] = [];
-  const unconfigured: Inventory[] = [];
-
-  for (const item of inventory) {
-    const required = item.inventory_item.required_stock ?? 0;
-
-    if (required === 0) {
-      unconfigured.push(item);
-      continue;
-    }
-
-
-    if (item.qty < required) {
-      low.push(item);
-    } else if (item.qty <= required + 5) {
-      warn.push(item);
-    } else if (item.qty <= required + 10) {
-      attention.push(item);
-    }
-  }
-
-  return { low, warn, attention };
-}
-
-export function BranchInventory() {
+export function WarehouseInventory() {
     const [inventory, setInventory] = useState<Inventory[]>([]);
     const [page, setPage] = useState<Page>({ page: 1, limit: 10});
     const [totalPages, setTotalPages] = useState(0);
@@ -65,10 +38,10 @@ export function BranchInventory() {
     }, [search]);
 
     useEffect(() => {
-        async function getInventory(branch_id : string) {
+        async function getInventory(warehouse_id : string) {
             try {
-                const data = await InventoryService.getByBranch(
-                branch_id,
+                const data = await InventoryService.getByWarehouse(
+                warehouse_id,
                 page.page,
                 page.limit,
                 debouncedSearch
@@ -77,14 +50,14 @@ export function BranchInventory() {
                 setTotalPages(data.totalPages);
 
 
-                const all = await fetchAllInventory("branch",branch_id);
+                const all = await fetchAllInventory("warehouse",warehouse_id );
                 setAllInventory(all);
             } catch(e) {
                 toast.error(`${e}`)
             }   
         }
 
-        getInventory("7e42ef23-002b-4d39-8d12-9101bbaf2385")
+        getInventory("235cc413-4694-4d77-a2a0-474431d847c2")
     }, [page, loading, debouncedSearch])
 
 
@@ -94,17 +67,17 @@ export function BranchInventory() {
         {openAdd && <AddQuantityModal setLoading={setLoading} loading={loading} setOpenAdd={setOpenAdd} name={editing!.inventory_item.name} id ={editing!.id} />}
         {openAddInventory && (
           <AddInventoryModal
-            id="7e42ef23-002b-4d39-8d12-9101bbaf2385" 
+            id="235cc413-4694-4d77-a2a0-474431d847c2" 
             open={openAddInventory} 
             setOpen={setOpenAddInventory} 
             currentInventory={inventory} 
             setLoading={setLoading}
-            type="branch"
+            type="warehouse"
           />
         )}
         <div className="flex flex-col gap-6">
             <div>
-                <ProcurementHeader label="Branch Inventory" />
+                <ProcurementHeader label="Warehouse Inventory" />
             </div> 
 
             <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">
@@ -194,7 +167,7 @@ export function BranchInventory() {
                 ) :
                 <>
                   {inventory.map((item, i) => (
-                    <div className={`grid grid-cols-6 items-center text-sm py-2 px-1 rounded-lghover:bg-gray-50 ${i % 2 === 0? "bg-gray-100" : "bg-white"}`}
+                    <div className={`grid grid-cols-6 items-center text-sm py-2 px-1 rounded-lghover:bg-gray-50 ${i % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
                     key={i}> 
                         <div className="font-bold text-gray-800">{item.id}</div>
                         <div className="text-gray-700 ms-5">{item.qty}</div>

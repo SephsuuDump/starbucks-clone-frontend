@@ -54,9 +54,9 @@ export class InventoryService {
             undefined,
         )
     }
-    static async getByWarehouse(id : string, page : number, limit : number) {
+    static async getByWarehouse(id : string, page : number, limit : number, search : string) {
         return await requestData(
-            `${url}/get-by-warehouse?warehouse_id=${id}&page=${page}&limit=${limit}`,
+            `${url}/get-by-warehouse?warehouse_id=${id}&page=${page}&limit=${limit}&search=${search}`,
             'GET',
             undefined,
             undefined,
