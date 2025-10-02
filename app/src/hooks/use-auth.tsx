@@ -22,7 +22,7 @@ type AuthProviderProps = React.PropsWithChildren<object>;
 const AuthContext = createContext<AuthContextType>({ claims: claimsInit, loading: true });
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    console.log('called');
+    // console.log('called');
     
     const [claims, setClaims] = useState(claimsInit);
     const [loading, setLoading] = useState(true);
