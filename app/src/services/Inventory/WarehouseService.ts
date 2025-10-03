@@ -11,7 +11,7 @@ type Warehouse = {
 
 export class WarehouseService {
     static async create(body : Warehouse) {
-        await requestData(
+        return await requestData(
                 `${url}/create`,
                 'POST',
                 undefined,
@@ -20,7 +20,7 @@ export class WarehouseService {
     }
 
     static async update(id : string, body : Warehouse) {
-        await requestData(
+        return await requestData(
                 `${url}/update?id=${id}`,
                 'POST',
                 undefined,
@@ -29,7 +29,7 @@ export class WarehouseService {
     }
 
     static async updateStatus(id : string, status :string) {
-        await requestData(
+        return await requestData(
                 `${url}/update-status?id=${id}&status=${status}`,
                 'POST',
                 undefined,
@@ -38,7 +38,7 @@ export class WarehouseService {
     }
 
     static async getById(id : string){
-        await requestData(
+        return await requestData(
                 `${url}/get-by-id?id=${id}`,
                 'GET',
                 undefined,
@@ -47,7 +47,7 @@ export class WarehouseService {
     }
 
     static async getAll(){
-        await requestData(
+        return await requestData(
                 `${url}/get-all`,
                 'GET',
                 undefined,
@@ -56,7 +56,7 @@ export class WarehouseService {
     }
 
     static async getByLocation(location : string){
-        await requestData(
+        return await requestData(
                 `${url}/get-by-location?location=${location}`,
                 'GET',
                 undefined,

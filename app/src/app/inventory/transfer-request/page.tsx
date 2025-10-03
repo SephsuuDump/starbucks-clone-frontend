@@ -1,45 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ChevronDown, Pencil, PenIcon, Trash, X } from "lucide-react";
 import { ProcurementHeader } from "@/components/custom/procurement/Header";
+import { Warehouse } from "@/types/Warehouse";
+import { WarehouseService } from "@/services/Inventory/WarehouseService";
+import { toast } from "sonner";
+import { InventoryItemService } from "@/services/Inventory/InventoryItemService";
+import { InventoryItems } from "@/types/InventoryItem";
+import { TransferService } from "@/services/Inventory/TransferService";
 
 export default function BranchTransferRequest() {
-  const [selectedWarehouse, setSelectedWarehouse] = useState("");
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
   const [selectedItem, setSelectedItem] = useState("");
   const [quantity, setQuantity] = useState<string>("");
   const [cart, setCart] = useState<any[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [warehouses, setWarehouses]  =  useState<Warehouse[]>([])
+  const [inventoryItems, setInventoryItems]  =  useState<InventoryItems[]>([])
 
   const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385    "
 
-  const warehouses = [
-    { id: "w1", name: "Warehouse A" },
-    { id: "w2", name: "Warehouse B" },
-  ];
+  useEffect(() => {
+    async function getAllWarehouseAndItem() {
+        try {
+            const data = await WarehouseService.getAll()
+            const res = await InventoryItemService.getInventoryItems(1, 999, '', 'az')
+            setWarehouses(data);
+            setInventoryItems(res.data)
+        } catch(err) {
+            toast.error(`${err}`)
+        }   
+    };
 
-  const inventoryItems = [
-    { id: "12108b82-3652-479b-bb44-28788a287692", name: "Chicken Breast" },
-    { id: "3322e1dc-640f-4431-9d30-ee68ba4f9818", name: "Pork Belly" },
-    { id: "54ca54a5-af2f-4ee9-bef4-2afdba0dc4c2", name: "Beef Steak" },
-  ];
+    getAllWarehouseAndItem();
+  }, [])
 
   const availableItems = inventoryItems.filter(
-    (i) => !cart.find((c) => c.id === i.id)
+    (i) => !cart.find((c) => c.id === i.skuid)
   );
 
   const handleAdd = () => {
     if (!selectedItem || !quantity) return;
 
-    const item = inventoryItems.find((i) => i.id === selectedItem);
+    const item = inventoryItems.find((i) => i.skuid === selectedItem);
     if (!item) return;
 
     setCart((prev) => [
       ...prev,
-      { id: item.id, name: item.name, qty: quantity },
+      { id: item.skuid, name: item.name, qty: quantity },
     ]);
 
     setSelectedItem("");
@@ -58,6 +70,37 @@ export default function BranchTransferRequest() {
     );
   };
 
+
+  const handleSubmit = async () => {
+    if(!selectedWarehouse && cart.length === 0 ) {
+        toast.error('Please make sure that you selected a warehouse and atleast one item.')
+        return;
+    }
+
+
+    const data = {
+        from_warehouse : selectedWarehouse,
+        to_warehouse : null,
+        to_branch : branchId.trim(),
+        items : cart.map(item => ({
+            inventory_item_id : String(item.id),
+            qty : Number(item.qty)
+        }))
+
+    };
+
+    console.log(JSON.stringify(data))
+
+    try {
+        const body = await TransferService.create(data);
+        if (body) {
+            const warehouse = warehouses.find(w => w.id === selectedWarehouse);
+            toast.success(`Transfer request from warehouse ${warehouse ? warehouse.name :'unknown'} is sent.`)
+        }
+    } catch(err) {
+        toast.error(`${err}`)
+    }
+  }
 
 
   return (
@@ -83,15 +126,15 @@ export default function BranchTransferRequest() {
 
             <div className="flex gap-4 items-center">
                 <select
-                className="border py-2 px rounded-md w-60 text-sm"
+                className="border py-2 px rounded-md w-60 text-sm disabled:text-gray-500"
                 value={selectedItem}
                 disabled={availableItems.length === 0}
                 onChange={(e) => setSelectedItem(e.target.value)}
                 
                 >
-                <option value="">Select Item</option>
+                <option value="" className="">Select Item</option>
                 {availableItems.map((i) => (
-                    <option key={i.id} value={i.id} className="">
+                    <option key={i.skuid} value={i.skuid} className="">
                     {i.name}
                     </option>
                 ))}
@@ -101,6 +144,7 @@ export default function BranchTransferRequest() {
                 type="text" // keep it string-based
                 placeholder="Quantity"
                 value={quantity}
+                disabled={!selectedItem}
                 onChange={(e) => {
                     if (/^[0-9]*$/.test(e.target.value)) {
                     setQuantity(e.target.value);
@@ -196,7 +240,6 @@ export default function BranchTransferRequest() {
                     </DialogTitle>
 
                     <div className="space-y-5 mt-3 text-sm">
-                    {/* Branch + Warehouse Info */}
                     <div className="border-b pb-2">
                         <p className="font-medium">
                         <strong>TO:</strong> <span className="text-gray-700">{branchId}</span>
@@ -247,7 +290,9 @@ export default function BranchTransferRequest() {
                     >
                         Cancel
                     </Button>
-                    <Button className="!bg-green-900 text-white">Confirm Transfer</Button>
+                    <Button className="!bg-green-900 text-white"
+                    onClick={handleSubmit}
+                    >Confirm Transfer</Button>
                     </div>
                 </DialogContent>
                 </Dialog>
