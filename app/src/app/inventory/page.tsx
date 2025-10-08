@@ -5,13 +5,13 @@ import { useAuth } from "@/hooks/use-auth";
 
 
 export default function Inventory()  {
-    const {claims, loading} = useAuth();
+    // const {claims, loading} = useAuth();
     return(
         <div>
             {/* IF BRANCH*/}
-            {/* <BranchInventory /> */}
+            <BranchInventory />
             {/*ELSE */}
-            <WarehouseInventory />
+            {/* <WarehouseInventory /> */}
 
 
         </div>

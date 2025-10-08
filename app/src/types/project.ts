@@ -1,0 +1,18 @@
+export interface Project {
+  id: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  budget: number;
+}
+
+export interface ProjectPayload {
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  budget: number;
+}
