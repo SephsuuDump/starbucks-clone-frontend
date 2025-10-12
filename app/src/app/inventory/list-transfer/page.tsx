@@ -21,8 +21,8 @@ export default function ListTransfer() {
     const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
     const [viewing, setViewing] = useState<TransferResponse>();
     const [refresh, setRefresh] = useState<boolean>(false);
-    //const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
-    const branchId = "ae059e49-a1a6-471c-8da0-ee1fa1d2cdf4"
+    const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
+    // const branchId = "ae059e49-a1a6-471c-8da0-ee1fa1d2cdf4"
 
     async function fetchTransfers(status: TransferStatus) {
         const res = await TransferService.getByDestination(branchId, status);

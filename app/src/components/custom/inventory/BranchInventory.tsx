@@ -123,7 +123,10 @@ export function BranchInventory() {
                   onClick={() => setOpenAddInventory(true)}>
                     + Add Inventory
                 </Button>
-                <Button className="!bg-green-900 px-4 py-2 rounded-lg text-white shadow hover:opacity-90">
+                <Button
+                    className="!bg-green-900 px-4 py-2 rounded-lg text-white shadow hover:opacity-90"
+                    onClick={() => window.location.href = "/inventory/transfer-request"}
+                >
                     Request Transfer
                 </Button>
                 </div>
