@@ -15,7 +15,7 @@ export class ResourceService {
   }
 
   static async deleteById(id: number) {
-    return await requestData(`${url}/delete-by-id?id=${id}`, "DELETE");
+    return await requestData(`${url}/delete-by-id?id=${id}`, "POST");
   }
 
   static async getAll(params?: { type?: string; available_only?: boolean }) {
@@ -31,5 +31,12 @@ export class ResourceService {
 
   static async getById(id: number) {
     return await requestData(`${url}/get-by-id?id=${id}`, "GET");
+  }
+
+  static async getByProject(id : string) {
+    return await requestData(
+      `${url}/get-by-project?id=${id}`,
+      'GET'
+    )
   }
 }

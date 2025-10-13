@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import BudgetPanel from "@/components/custom/project/BugdetPanel";
 import { ProjectResources } from "@/components/custom/project/ProjectResources";
+import { AllocateResourceModal } from "@/components/custom/project/AllocateResourceModal";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [openAllocate, setOpenAllocate] = useState(false);
 
   async function load() {
     try {
@@ -57,6 +59,15 @@ export default function ProjectDetailsPage() {
     <div className="flex flex-col gap-6">
       <ProcurementHeader label="Project Details" />
 
+      {openAllocate && (
+      <AllocateResourceModal
+        open={openAllocate}
+        setOpen={setOpenAllocate}
+        projectId={project?.id!}
+        onAllocated={load}
+      />
+      )}
+
       {project && (
         <>
           <div className="flex w-full gap-4">
@@ -73,9 +84,12 @@ export default function ProjectDetailsPage() {
               <Link href={`/project/${id}/create-task`}>
                 <Button className="!bg-green-900 text-white">+ Add Task</Button>
               </Link>
-              <Link href={`/project/${id}/allocate`}>
-                <Button className="!bg-blue-700 text-white">Manage Allocations</Button>
-              </Link>
+              <Button
+              className="!bg-blue-700 text-white"
+              onClick={() => setOpenAllocate(true)}
+            >
+              Allocate Resource
+            </Button>
             </div>
           </div>
 

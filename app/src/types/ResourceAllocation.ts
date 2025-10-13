@@ -1,17 +1,15 @@
 export interface ResourceAllocation {
-  id: number;
-  project_id: number;
-  task_id: number;
-  resource_id: number;
+  id: string;
+  task_id: string;
+  resource_id: string;
   quantity: number;
   allocated_cost: number;
   created_at: string;
 }
 
 export interface ResourceAllocationPayload {
-  project_id: number;
-  task_id: number;
-  resource_id: number;
+  task_id: string;
+  resource_id: string;
   quantity: number;
   allocated_cost: number;
 }
