@@ -13,6 +13,7 @@ import TasksTable from "@/components/custom/project/TaskTable";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import BudgetPanel from "@/components/custom/project/BugdetPanel";
+import { ProjectResources } from "@/components/custom/project/ProjectResources";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -58,7 +59,12 @@ export default function ProjectDetailsPage() {
 
       {project && (
         <>
-          <ProjectOverview project={project} />
+          <div className="flex w-full gap-4">
+            <div className="w-[60%]"><ProjectOverview project={project}/></div>
+            <div className="w-[40%]"><ProjectResources projectId={project.id} /></div>
+            
+          </div>
+
           <BudgetPanel project={project} />
 
           <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">

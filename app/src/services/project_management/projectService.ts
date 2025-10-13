@@ -14,7 +14,7 @@ export class ProjectService {
   }
 
   static async deleteById(id: string) {
-    return await requestData(`${url}/delete-by-id?id=${id}`, "DELETE");
+    return await requestData(`${url}/delete-by-id?id=${id}`, "POST");
   }
 
   static async getAll(params?: { status?: string; start?: string; end?: string }) {
