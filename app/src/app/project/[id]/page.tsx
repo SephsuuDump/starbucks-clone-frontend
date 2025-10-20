@@ -78,11 +78,9 @@ export default function ProjectDetailsPage() {
 
       {project && (
         <>
-          <div className="flex w-full gap-4">
-            <div className="w-[60%]"><ProjectOverview project={project}/></div>
-            <div className="w-[40%]"><ProjectResources projectId={project.id} /></div>
+          <div className=""><ProjectOverview project={project}/></div>
+
             
-          </div>
 
           <BudgetPanel project={project} />
 

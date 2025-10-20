@@ -14,7 +14,7 @@ export class ResourceService {
     return await requestData(`${url}/update?id=${id}`, "PUT", undefined, payload);
   }
 
-  static async deleteById(id: number) {
+  static async deleteById(id: string) {
     return await requestData(`${url}/delete-by-id?id=${id}`, "POST");
   }
 
@@ -29,7 +29,7 @@ export class ResourceService {
     return await requestData(`${url}/get-all?${query}`, "GET");
   }
 
-  static async getById(id: number) {
+  static async getById(id: string) {
     return await requestData(`${url}/get-by-id?id=${id}`, "GET");
   }
 

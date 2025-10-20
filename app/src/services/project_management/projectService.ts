@@ -10,16 +10,15 @@ export class ProjectService {
   }
 
   static async update(id: string, payload: Partial<ProjectPayload>) {
-    return await requestData(`${url}/update?id=${id}`, "PUT", undefined, payload);
+    return await requestData(`${url}/update?id=${id}`, "POST", undefined, payload);
   }
 
   static async deleteById(id: string) {
     return await requestData(`${url}/delete-by-id?id=${id}`, "POST");
   }
 
-  static async getAll(params?: { status?: string; start?: string; end?: string }) {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
-    return await requestData(`${url}/get-all?${query}`, "GET");
+  static async getAll() {
+    return await requestData(`${url}/get-all`, "GET");
   }
 
   static async getById(id: string) {

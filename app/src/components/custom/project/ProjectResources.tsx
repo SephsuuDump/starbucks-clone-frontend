@@ -26,7 +26,7 @@ export function ProjectResources({ projectId }: { projectId: string }) {
     }
   }
 
-  async function handleDeleteResource(id: number) {
+  async function handleDeleteResource(id: string) {
     try {
       await ResourceService.deleteById(id);
       toast.success("Resource deleted successfully!");

@@ -6,6 +6,7 @@ export interface Project {
   end_date: string;
   status: string;
   budget: number;
+  actual_end : string;
 }
 
 export interface ProjectPayload {

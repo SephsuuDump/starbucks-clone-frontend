@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatDate } from "./ProjectOverview";
+import { start } from "repl";
 
 
 export default function EditProjectModal({
@@ -32,6 +33,8 @@ export default function EditProjectModal({
   loading: boolean;
 }) {
   const [form, setForm] = useState({
+    end_date : project.end_date,
+    start_date : project.start_date,
     status: project.status || "PENDING",
     budget: String(project.budget ?? 0),
   });
