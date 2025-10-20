@@ -55,6 +55,7 @@ export default function TaskForm({
   async function handleSubmit() {
     try {
       if (initial?.id) {
+        console.log(form)
         await TaskService.update(initial.id, form);
         toast.success("Task updated");
       } else {

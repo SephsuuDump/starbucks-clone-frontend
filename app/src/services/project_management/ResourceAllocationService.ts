@@ -17,7 +17,7 @@ export class ResourceAllocationService {
     return await requestData(`${url}/delete-by-id?id=${id}`, "DELETE");
   }
 
-  static async getAll(params?: { project_id?: string; task_id?: string; resource_id?: string }) {
+  static async getAll(params?: { id?: string; }) {
     const query = new URLSearchParams(params as Record<string, string>).toString();
     return await requestData(`${url}/get-all?${query}`, "GET");
   }

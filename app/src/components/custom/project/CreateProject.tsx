@@ -37,7 +37,7 @@ export default function CreateProjectModal({
     start_date: string;
     end_date: string;
     status: string;
-    budget: string; // ✅ now string
+    budget: string;
   }>({
     name: "",
     description: "",
@@ -49,17 +49,14 @@ export default function CreateProjectModal({
 
   const [onProcess, setOnProcess] = useState(false);
 
-  // ✅ Handles normal input fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
     if (name === "budget") {
-      // allow only digits and one decimal with up to 2 decimal places
       const filtered = value
-        .replace(/[^\d.]/g, "") // remove non-digit and non-dot
-        .replace(/^(\d*\.\d{0,2}).*$/, "$1"); // restrict to 2 decimal places
+        .replace(/[^\d.]/g, "")
+        .replace(/^(\d*\.\d{0,2}).*$/, "$1");
 
-      // prevent multiple dots
       if ((filtered.match(/\./g) || []).length > 1) return;
 
       setForm((prev) => ({ ...prev, [name]: filtered }));
@@ -87,7 +84,7 @@ export default function CreateProjectModal({
         start_date: form.start_date,
         end_date: form.end_date,
         status: form.status || "PENDING",
-        budget: parseFloat(form.budget) || 0, // ✅ safely convert back to number
+        budget: parseFloat(form.budget) || 0, 
       };
 
       await ProjectService.create(payload);

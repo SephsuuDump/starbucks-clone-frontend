@@ -18,7 +18,7 @@ export class TaskService {
     return await requestData(`${url}/delete-by-id?id=${id}`, "DELETE");
   }
 
-  static async getAll(params?: { project_id?: string; status?: string; start?: string; end?: string }) {
+  static async getAll(params?: { project_id?: string;}) {
     const query = new URLSearchParams(params as Record<string, string>).toString();
     return await requestData(`${url}/get-all?${query}`, "GET");
   }

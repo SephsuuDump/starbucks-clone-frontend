@@ -5,12 +5,12 @@ import { ResourceAllocation } from "@/types/ResourceAllocation";
 import { ResourceAllocationService } from "@/services/project_management/ResourceAllocationService";
 import { Project } from "@/types/project";
 
-export default function BudgetPanel({ project }: { project: Project }) {
+export default function rBudgetPanel({ project }: { project: Project }) {
   const [allocs, setAllocs] = useState<ResourceAllocation[]>([]);
 
   useEffect(() => {
     async function load() {
-      const res = await ResourceAllocationService.getAll({ project_id: String(project.id) });
+      const res = await ResourceAllocationService.getAll({ id: String(project.id) });
       setAllocs(res.data || []);
     }
     load();

@@ -15,22 +15,24 @@ import Link from "next/link";
 import BudgetPanel from "@/components/custom/project/BugdetPanel";
 import { ProjectResources } from "@/components/custom/project/ProjectResources";
 import { AllocateResourceModal } from "@/components/custom/project/AllocateResourceModal";
+import { CreateTaskModal } from "@/components/custom/project/CreateTaskModal";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [openAllocate, setOpenAllocate] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
 
   async function load() {
     try {
       const proj = await ProjectService.getById(String(id));
       setProject(proj);
       const taskList = await TaskService.getAll({ 
-        project_id: String(id), 
-        status : 'PENDING',
-        start : '2025-10-01',
-        end : '2025-11-01'
+        project_id: String(id)
+        // status : 'PENDING',
+        // start : '2025-10-01',
+        // end : '2025-11-01'
 
       });
       setTasks(taskList.data || []);
@@ -41,8 +43,7 @@ export default function ProjectDetailsPage() {
 
   useEffect(() => {
     load();
-    console.log(project)
-    console.log(tasks)
+
   }, [id]);
 
   async function handleDeleteTask(taskId: string) {
@@ -68,6 +69,13 @@ export default function ProjectDetailsPage() {
       />
       )}
 
+      {openCreate && (<CreateTaskModal
+        open={openCreate}
+        setOpen={setOpenCreate}
+        projectId={project?.id!}
+      />
+      )}
+
       {project && (
         <>
           <div className="flex w-full gap-4">
@@ -81,9 +89,9 @@ export default function ProjectDetailsPage() {
           <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">
             <div className="font-semibold text-gray-800">Tasks</div>
             <div className="flex gap-2">
-              <Link href={`/project/${id}/create-task`}>
-                <Button className="!bg-green-900 text-white">+ Add Task</Button>
-              </Link>
+              <Button className="!bg-green-900 text-white"
+              onClick={() => setOpenCreate(true)}>+ Add Task</Button>
+              
               <Button
               className="!bg-blue-700 text-white"
               onClick={() => setOpenAllocate(true)}
