@@ -41,7 +41,7 @@ export function ProjectResources({ projectId }: { projectId: string }) {
   }, [projectId]);
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
+    <div className="bg-white rounded-xl shadow-md p-6 space-y-4 h-full">
       {openAdd && (
         <AddResourceModal
           open={openAdd}

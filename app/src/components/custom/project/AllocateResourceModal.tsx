@@ -116,7 +116,7 @@ export function AllocateResourceModal({
 
         <div className="space-y-4 mt-2">
           <div>
-            <Label className="text-gray-700 font-medium">Select Task</Label>
+            <Label className="text-gray-700 font-medium mb-2">Select Task</Label>
             <Select
               onValueChange={(val) => setForm((prev) => ({ ...prev, task_id: val }))}
               defaultValue={form.task_id}
@@ -135,7 +135,7 @@ export function AllocateResourceModal({
           </div>
 
           <div>
-            <Label className="text-gray-700 font-medium">Select Resource</Label>
+            <Label className="text-gray-700 font-medium mb-2">Select Resource</Label>
             <Select
               onValueChange={(val) => {
                 const resource = resources.find((r) => r.id === val);
@@ -164,7 +164,7 @@ export function AllocateResourceModal({
           </div>
 
           <div>
-            <Label className="text-gray-700 font-medium">Quantity</Label>
+            <Label className="text-gray-700 font-medium mb-2">Quantity</Label>
             <Input
               name="quantity"
               placeholder="e.g., 10"
@@ -174,7 +174,7 @@ export function AllocateResourceModal({
           </div>
 
           <div>
-            <Label className="text-gray-700 font-medium">Allocated Cost</Label>
+            <Label className="text-gray-700 font-medium mb-2">Allocated Cost</Label>
             <Input value={`₱${form.allocated_cost.toFixed(2)}`} disabled />
           </div>
 

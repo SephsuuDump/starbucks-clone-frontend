@@ -21,7 +21,6 @@ export default function ProjectDetailsPage() {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [openAllocate, setOpenAllocate] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
 
   async function load() {
@@ -30,10 +29,6 @@ export default function ProjectDetailsPage() {
       setProject(proj);
       const taskList = await TaskService.getAll({ 
         project_id: String(id)
-        // status : 'PENDING',
-        // start : '2025-10-01',
-        // end : '2025-11-01'
-
       });
       setTasks(taskList.data || []);
     } catch (e) {
@@ -60,15 +55,6 @@ export default function ProjectDetailsPage() {
     <div className="flex flex-col gap-6">
       <ProcurementHeader label="Project Details" />
 
-      {openAllocate && (
-      <AllocateResourceModal
-        open={openAllocate}
-        setOpen={setOpenAllocate}
-        projectId={project?.id!}
-        onAllocated={load}
-      />
-      )}
-
       {openCreate && (<CreateTaskModal
         open={openCreate}
         setOpen={setOpenCreate}
@@ -89,13 +75,6 @@ export default function ProjectDetailsPage() {
             <div className="flex gap-2">
               <Button className="!bg-green-900 text-white"
               onClick={() => setOpenCreate(true)}>+ Add Task</Button>
-              
-              <Button
-              className="!bg-blue-700 text-white"
-              onClick={() => setOpenAllocate(true)}
-            >
-              Allocate Resource
-            </Button>
             </div>
           </div>
 

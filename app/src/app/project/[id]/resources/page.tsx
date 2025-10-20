@@ -5,12 +5,15 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { ResourceAllocationService } from "@/services/project_management/ResourceAllocationService";
 import { ProjectResources } from "@/components/custom/project/ProjectResources";
+import { AllocateResourceModal } from "@/components/custom/project/AllocateResourceModal";
+import { Button } from "@/components/ui/button";
 
 
 export default function ProjectResourcesPage() {
   const { id } = useParams();
   const [allocations, setAllocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [openAllocate, setOpenAllocate] = useState(false);
 
   async function loadAllocations() {
     try {
@@ -33,9 +36,24 @@ export default function ProjectResourcesPage() {
   }, [allocations]);
 
   return (
-    <div className="flex gap-4 p-6">
+    <>
+    {openAllocate && (
+        <AllocateResourceModal
+          open={openAllocate}
+          setOpen={setOpenAllocate}
+          projectId={String(id)}
+          onAllocated={loadAllocations}
+        />
+    )}
+
+    <div className="flex gap-4 p-6 h-full">
       <div className="w-[80%] bg-white rounded-xl shadow-md p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800">Resource Allocations</h2>
+        <div className="flex justify-between">
+          <h2 className="text-lg font-semibold text-gray-800">Resource Allocations</h2>
+          <Button className="!bg-green-900 hover:opacity-90"
+          onClick={() => setOpenAllocate(true)}>Allocate Resources</Button>
+        </div>
+
 
         {loading ? (
           <div className="text-center text-gray-500 italic py-3">
@@ -99,5 +117,6 @@ export default function ProjectResourcesPage() {
         <ProjectResources projectId={String(id)} />
       </div>
     </div>
-  );
+    </>
+  )
 }
