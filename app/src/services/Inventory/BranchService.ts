@@ -1,16 +1,13 @@
 import { BASE_URL } from "@/lib/config";
 import { requestData } from "../_main";
+import { Branch } from "@/types/Branch";
 
 const url = `${BASE_URL}/branch`
 
-type Branch =  {
-    name : string,
-    location : string
-}
 
 export class BranchService {
     static async create(body : Branch) {
-        await requestData(
+        return await requestData(
             `${url}/create`,
             'POST',
             undefined,
@@ -18,8 +15,8 @@ export class BranchService {
         )
     }
 
-    static async update(updateRequest : Branch, id : string) {
-        await requestData(
+    static async update(updateRequest : Partial<Branch>, id : string) {
+        return await requestData(
             `${url}/update?id=${id}`,
             'POST',
             undefined,
@@ -28,7 +25,7 @@ export class BranchService {
     }
 
     static async delete(id : string) {
-        await requestData(
+        return await requestData(
             `${url}/delete?id=${id}`,
             'POST',
             undefined,
@@ -37,7 +34,7 @@ export class BranchService {
     }
 
     static async getById(id : string) {
-        await requestData(
+        return await requestData(
             `${url}/get-by-id?id=${id}`,
             'GET',
             undefined,
@@ -46,7 +43,7 @@ export class BranchService {
     }
 
     static async getByLocation(location : string) {
-        await requestData(
+        return await requestData(
             `${url}/get-by-location?location=${location}`,
             'GET',
             undefined,
@@ -55,7 +52,7 @@ export class BranchService {
     }
 
     static async getAll (){
-        await requestData(
+        return await requestData(
             `${url}/get-all`,
             'GET',
             undefined,
