@@ -9,20 +9,20 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-type TransferStatus = "pending" | "out" | "completed";
+type TransferStatus = "PENDING" | "OUT" | "DELIVERED";
 
 export default function ListTransfer() {
     const [transfers, setTransfers] = useState<Record<TransferStatus, TransferResponse[]>>({
-        pending: [],
-        out: [],
-        completed: [],
+        PENDING: [],
+        OUT: [],
+        DELIVERED: [],
     });
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
     const [viewing, setViewing] = useState<TransferResponse>();
     const [refresh, setRefresh] = useState<boolean>(false);
     const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
-    // const branchId = "ae059e49-a1a6-471c-8da0-ee1fa1d2cdf4"
+    const warehouse_id = "235cc413-4694-4d77-a2a0-474431d847c2";
 
     async function fetchTransfers(status: TransferStatus) {
         const res = await TransferService.getByDestination(branchId, status);
@@ -30,8 +30,9 @@ export default function ListTransfer() {
     }
 
     useEffect(() => {
-        fetchTransfers("pending");
-        fetchTransfers("out");
+        fetchTransfers("PENDING");
+        fetchTransfers("OUT");
+        fetchTransfers("DELIVERED");
     }, [refresh]) 
 
     async function handleViewing(id:string) {
@@ -71,7 +72,7 @@ export default function ListTransfer() {
             <ProcurementHeader label="Supply Transfer"/>
 
             <div className="flex flex-col bg-white shadow-sm rounded-xl w-full  p-6 mt-5">
-                <h1 className="font-bold text-gray-700 text-lg">PENDING TRANSFERS</h1>
+                <h1 className="font-bold text-gray-700 text-lg">PENDING REQUEST TRANSFERS</h1>
                 
                 <div className="grid grid-cols-4 text-sm font-semibold text-gray-700 mt-5 mb-2 items-center justify-center">
                     <div className="flex justify-center">TRANSFER ID</div>
@@ -80,10 +81,10 @@ export default function ListTransfer() {
                     <div className="flex justify-center">ACTION</div>
                 </div>
 
-                {transfers.pending.length === 0 ? 
+                {transfers.PENDING.length === 0 ? 
                 <div className="flex rounded-lg shadow-sm p-4 mb-3 border-gray-200 justify-center font-light text-sm bg-gray-200">No data found </div>  : 
                 <>
-                {transfers.pending.map((request) => (
+                {transfers.PENDING.map((request) => (
                     <div
                         key={request.id}
                         className="bg-white rounded-lg shadow-sm p-2 mb-3 border "
@@ -120,11 +121,11 @@ export default function ListTransfer() {
                     <div className="flex justify-center">ACTION</div>
                 </div>
 
-                {transfers.out.length === 0 ? 
+                {transfers.OUT.length === 0 ? 
                 <div className="flex rounded-lg shadow-sm p-4 mb-3 border-gray-200 justify-center font-light text-sm bg-gray-200">No data found </div>  
                 : 
                 <>
-                  {transfers.out.map((request) => (
+                  {transfers.OUT.map((request) => (
                     <div
                         key={request.id}
                         className="bg-white rounded-lg shadow-sm p-4 mb-3 border "

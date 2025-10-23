@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, History, Database } from "lucide-react";
+import { ChevronLeft, ChevronRight, History } from "lucide-react";
 import { toast } from "sonner";
 import { ProcurementHeader } from "@/components/custom/procurement/Header";
 import { InventoryLogsService } from "@/services/Inventory/InvetoryLogsService";
@@ -27,12 +27,16 @@ type InventoryLog = {
 };
 
 export default function BranchInventoryLogs() {
+
   const branch_id = "7e42ef23-002b-4d39-8d12-9101bbaf2385";
+  const warehouse_id = "235cc413-4694-4d77-a2a0-474431d847c2";
+
   const [logs, setLogs] = useState<InventoryLog[]>([]);
   const [page, setPage] = useState<Page>({ page: 1, limit: 10 });
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -44,28 +48,30 @@ export default function BranchInventoryLogs() {
 
   useEffect(() => {
     async function getLogs() {
-        try {
+      try {
         const data = await InventoryLogsService.getAll(
-            page.page,           
-            10,                  
-            debouncedSearch,     
-            branch_id         
+          page.page,
+          10,
+          debouncedSearch,
+          branch_id,
+          undefined
+
         );
         setLogs(data.data);
         setTotalPages(data.totalPages);
-        } catch (e) {
+      } catch (e) {
         toast.error(`Failed to load logs: ${e}`);
-        }
+      }
     }
     getLogs();
-    }, [page, debouncedSearch]);
-    return (
+  }, [page, debouncedSearch]);
+
+  return (
     <div className="flex flex-col gap-6">
       <div>
         <ProcurementHeader label="Branch Inventory Logs" />
       </div>
 
-      {/* Top bar */}
       <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">
         <div className="flex gap-1">
           <Input
@@ -78,7 +84,6 @@ export default function BranchInventoryLogs() {
         </div>
       </div>
 
-      {/* Logs table */}
       <div className="bg-white rounded-xl shadow-md p-8">
         <div className="overflow-x-auto">
           <div className="grid grid-cols-7 text-sm font-bold text-gray-600 border-b pb-3">
@@ -140,7 +145,6 @@ export default function BranchInventoryLogs() {
             ))
           )}
 
-          {/* Pagination */}
           <div className="flex items-center gap-3 pt-5">
             <button
               disabled={page.page === 1}
