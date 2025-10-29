@@ -3,6 +3,11 @@ export interface User {
     last_name: string;
     email: string;
     password: string;
+
+    branch?: {
+        id: string,
+        name: string,
+    }
 }
 
 export interface AuthCredential {

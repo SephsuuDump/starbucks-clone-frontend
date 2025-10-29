@@ -1,23 +1,15 @@
 "use client"
 
+import { AuthPage } from "@/features/auth/AuthPage";
+import { DashboardPage } from "@/features/dashboard/DashboardPage.";
 import { useAuth } from "@/hooks/use-auth";
-import SupplierPage from "./dashboard/supplier";
-import EmployeePage from "./dashboard/employee";
-import LoginSignup from "./auth/page";
 
 export default function Home() {
-    const { claims, loading } =  useAuth();
+    const { claims, loading } = useAuth();
 
-    console.log('Dashboard', claims);
-    
-
-    // if (loading) return <div>LoadingHELLO</div>
-    if (!claims) return <LoginSignup />
+    if (loading) return <div>Loading</div>
+    if (!claims) return <AuthPage />
     return (
-        <>
-            {claims.role === 'SUPPLIER' && <SupplierPage />}
-            {claims.role === 'EMPLOYEE' && <EmployeePage />}
-         
-        </>
+        <DashboardPage />
     );
 }

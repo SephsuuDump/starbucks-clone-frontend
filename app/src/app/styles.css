@@ -22,7 +22,7 @@ button {
 .th {
     font-size: 14px;
     font-weight: 600;
-    padding: 3px 10px 3px 10px;
+    padding: 8px 10px 8px 10px;
     border-left: 1px solid #fff;
 }
 
@@ -106,4 +106,26 @@ button {
   );
 }
 
+.flip-card {
+  perspective: 1000px;
+}
 
+.flip-inner {
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-rotate {
+  transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+  backface-visibility: hidden;
+  border-radius: 0.75rem; /* match rounded-xl */
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}

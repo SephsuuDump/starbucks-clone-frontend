@@ -5,6 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 function Dialog({
   ...props
@@ -126,6 +127,22 @@ function DialogDescription({
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
+  )
+}
+
+export function ModalTitle({ text }: {
+  text: string
+}) {
+  return (
+    <DialogTitle className="flex-center-y gap-2">
+      <Image
+        src='/svg/logo3.svg'
+        alt="Starbucks Logo"
+        width={50}
+        height={50}
+      />
+      <div className="text-xl font-semibold">{ text }</div>
+    </DialogTitle>
   )
 }
 
