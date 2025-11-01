@@ -9,23 +9,25 @@ import DeleteLocation from "./DeleteLocationModal";
 import LocationUpdateModal from "./UpdateLocationModal";
 
 type LocationCardProps = {
-  id : string,
-  name: string;
-  location: string;
-  imageUrl?: string | null;
-  type : string;
-  onEdit?: () => void;
-  onDelete?: () => void;
+    id : string,
+    name: string;
+    location: string;
+    imageUrl?: string | null;
+    type : string;
+    onEdit?: () => void;
+    onDelete?: () => void;
+    reload?: () => void;
 };
 
 export function LocationCard({
-  id,
-  name,
-  location,
-  imageUrl,
-  type,
-  onEdit,
-  onDelete,
+    id,
+    name,
+    location,
+    imageUrl,
+    type,
+    onEdit,
+    onDelete,
+    reload
 }: LocationCardProps) {
     const [loading, setLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -45,6 +47,7 @@ export function LocationCard({
                 setOpenDelete={setOpenDelete}
                 setLoading={setLoading}
                 loading={loading}
+                reload={reload}
                 />
             )}
 
@@ -58,6 +61,7 @@ export function LocationCard({
                 setOpenEdit={setOpenEdit}
                 setLoading={setLoading}
                 loading={loading}
+                reload={reload}
                 />
             )}
 

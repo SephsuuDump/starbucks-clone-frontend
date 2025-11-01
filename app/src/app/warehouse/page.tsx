@@ -6,66 +6,77 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 
-import { Branch } from "@/types/Branch";
 import { ProcurementHeader } from "@/components/custom/procurement/Header";
 import { LocationCard } from "@/components/custom/inventory/Card";
-import { BranchService } from "@/services/Inventory/BranchService";
+import { WarehouseService } from "@/services/Inventory/WarehouseService";
 import AddLocationModal from "@/components/custom/inventory/branch/AddLocationModal";
 
-export default function BranchPage() {
-  const [branches, setBranches] = useState<Branch[]>([]);
+type Warehouse = {
+  id: string;
+  name: string;
+  location: string;
+};
+
+export default function WarehousePage() {
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [search, setSearch] = useState("");
-  const [filtered, setFiltered] = useState<Branch[]>([]);
+  const [filtered, setFiltered] = useState<Warehouse[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function fetchBranches() {
+
+  async function fetchWarehouses() {
     try {
       setLoading(true);
-      const res = await BranchService.getAll();
+      const res = await WarehouseService.getAll();
       if (Array.isArray(res)) {
-        setBranches(res);
+        setWarehouses(res);
         setFiltered(res);
       } else {
         toast.error("Unexpected response format");
       }
-    } catch {
-      toast.error("Failed to fetch branches");
+    } catch (err) {
+      toast.error("Failed to fetch warehouses");
     } finally {
       setLoading(false);
     }
   }
 
+
   useEffect(() => {
-    fetchBranches();
+    fetchWarehouses();
   }, []);
+
 
   useEffect(() => {
     const term = search.toLowerCase();
     setFiltered(
-      branches.filter(
-        (b) =>
-          b.name.toLowerCase().includes(term) ||
-          b.location.toLowerCase().includes(term)
+      warehouses.filter(
+        (w) =>
+          w.name.toLowerCase().includes(term) ||
+          w.location.toLowerCase().includes(term)
       )
     );
-  }, [search, branches]);
+  }, [search, warehouses]);
 
   return (
     <>
       {openAdd && (
-        <AddLocationModal setOpenAdd={setOpenAdd} reload={fetchBranches} type="branch" />
+        <AddLocationModal
+          setOpenAdd={setOpenAdd}
+          reload={fetchWarehouses}
+          type="warehouse"
+        />
       )}
 
       <div className="flex flex-col gap-6">
-        <ProcurementHeader label="Branch Management" />
-
+        <ProcurementHeader label="Warehouse Management" />
 
         <div className="flex justify-between items-center bg-white rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <Search className="text-gray-400 w-5 h-5" />
             <Input
-              placeholder="Search branches..."
+              placeholder="Search warehouses..."
               className="w-64 border-gray-200 focus:border-green-700 focus:ring-green-700"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -76,29 +87,28 @@ export default function BranchPage() {
             onClick={() => setOpenAdd(true)}
             className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-all"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Branch
+            <Plus className="w-4 h-4 mr-2" /> Add Warehouse
           </Button>
         </div>
 
-
         <div
-        className="
+          className="
             bg-white rounded-2xl shadow-md p-6 
             flex flex-col gap-6 transition-all duration-200
             flex-1 h-full min-h-[calc(100vh-160px)]
-        "
+          "
         >
           <h2 className="text-lg font-semibold text-gray-800">
-            Branch Locations
+            Warehouse Locations
           </h2>
 
           {loading ? (
             <div className="flex justify-center items-center text-gray-500 py-10">
-              Loading branches...
+              Loading warehouses...
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex justify-center items-center text-gray-500 py-10">
-              No branches found.
+              No warehouses found.
             </div>
           ) : (
             <div
@@ -107,18 +117,17 @@ export default function BranchPage() {
                 gap-5 place-items-center
               "
             >
-                {filtered.map((branch) => (
+              {filtered.map((warehouse) => (
                 <LocationCard
-                    key={branch.id}
-                    id={branch.id}
-                    name={branch.name}
-                    location={branch.location}
-                    imageUrl={null}
-                    type="branch"
-                    // 👇 new prop for realtime updates
-                    reload={fetchBranches} 
+                  key={warehouse.id}
+                  id={warehouse.id}
+                  name={warehouse.name}
+                  location={warehouse.location}
+                  imageUrl={null}
+                  type="warehouse"
+                  reload={fetchWarehouses}
                 />
-                ))}
+              ))}
             </div>
           )}
         </div>

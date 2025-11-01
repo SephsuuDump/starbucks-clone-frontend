@@ -181,10 +181,11 @@ export function BranchInventory() {
 
             <div className="bg-white rounded-xl shadow-md p-8">
                 <div className="overflow-x-auto">
-                <div className="grid grid-cols-6 text-sm font-bold text-gray-600 border-b pb-3">
+                <div className="grid grid-cols-7 text-sm font-bold text-gray-600 border-b pb-3">
                     <div >ID</div>
                     <div className="ms-5">Quantity</div>
                     <div>Item (Name & Unit)</div>
+                    <div>Category</div>
                     <div>Branch Name</div>
                     <div>Required Stock </div>
                     <div className="text-center">Actions</div>
@@ -197,11 +198,12 @@ export function BranchInventory() {
                 ) :
                 <>
                   {inventory.map((item, i) => (
-                    <div className={`grid grid-cols-6 items-center text-sm py-2 px-1 rounded-lghover:bg-gray-50 ${i % 2 === 0? "bg-gray-100" : "bg-white"}`}
+                    <div className={`grid grid-cols-7 items-center text-sm py-2 px-1 rounded-lghover:bg-gray-50 ${i % 2 === 0? "bg-gray-100" : "bg-white"}`}
                     key={i}> 
                         <div className="font-bold text-gray-800">{item.id}</div>
                         <div className="text-gray-700 ms-5">{item.qty}</div>
                         <div className="text-gray-700">{item.inventory_item.name} ({item.inventory_item.unit_measurement})</div>
+                        <div className="text-gray-700">{item.inventory_item.category}</div>
                         <div className="text-gray-700">{item.branch?.name}</div>
                         <div className="text-gray-700">{item.inventory_item.required_stock}</div>
                         <div className="flex gap-2 justify-center">

@@ -10,6 +10,7 @@ import { ProcurementHeader } from "../procurement/Header";
 import { BranchService } from "@/services/Inventory/BranchService";
 import { WarehouseService } from "@/services/Inventory/WarehouseService";
 
+
 export default function LocationUpdateModal({
   setOpenEdit,
   name,
@@ -18,6 +19,7 @@ export default function LocationUpdateModal({
   setLoading,
   loading,
   type,
+  reload
 }: {
   setOpenEdit: Dispatch<SetStateAction<boolean>>;
   name: string;
@@ -25,7 +27,8 @@ export default function LocationUpdateModal({
   id: string;
   setLoading: Dispatch<SetStateAction<boolean>>;
   loading: boolean;
-  type: string;
+  type: string; 
+  reload?: () => void;
 }) {
   const [onProcess, setProcess] = useState(false);
   const [form, setForm] = useState({
@@ -53,6 +56,7 @@ export default function LocationUpdateModal({
         toast.success("Updated Location for " + form.name);
         setLoading(!loading);
         setOpenEdit(false);
+        reload?.();
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -69,12 +73,15 @@ export default function LocationUpdateModal({
           <ProcurementHeader label="Update Location" />
         </DialogTitle>
         <div className="flex flex-col gap-3 px-2">
+          <h1 className="text-sm font-bold ms-1">Branch Name: </h1>
           <Input
             name="name"
             value={form.name}
             onChange={handleChange}
             placeholder="Enter name"
+            className="mb-1"
           />
+          <h1 className="text-sm font-bold ms-1">Branch Location: </h1>
           <Input
             name="location"
             value={form.location}

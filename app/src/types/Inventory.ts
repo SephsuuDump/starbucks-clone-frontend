@@ -5,7 +5,8 @@ export type Inventory = {
         skuid : string,
         name : string,
         unit_measurement : string,
-        required_stock : number
+        required_stock : number,
+        category : string
     },
     warehouse:  {
         name : string, 
