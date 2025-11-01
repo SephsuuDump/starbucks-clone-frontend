@@ -10,12 +10,8 @@ import { ProcurementHeader } from "@/components/custom/procurement/Header";
 import { LocationCard } from "@/components/custom/inventory/Card";
 import { WarehouseService } from "@/services/Inventory/WarehouseService";
 import AddLocationModal from "@/components/custom/inventory/branch/AddLocationModal";
+import { Warehouse } from "@/types/Warehouse";
 
-type Warehouse = {
-  id: string;
-  name: string;
-  location: string;
-};
 
 export default function WarehousePage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -123,7 +119,7 @@ export default function WarehousePage() {
                   id={warehouse.id}
                   name={warehouse.name}
                   location={warehouse.location}
-                  imageUrl={null}
+                  imageUrl={warehouse.image_url}
                   type="warehouse"
                   reload={fetchWarehouses}
                 />

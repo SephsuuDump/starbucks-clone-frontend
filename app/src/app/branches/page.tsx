@@ -113,9 +113,8 @@ export default function BranchPage() {
                     id={branch.id}
                     name={branch.name}
                     location={branch.location}
-                    imageUrl={null}
+                    imageUrl={branch.image_url}
                     type="branch"
-                    // 👇 new prop for realtime updates
                     reload={fetchBranches} 
                 />
                 ))}

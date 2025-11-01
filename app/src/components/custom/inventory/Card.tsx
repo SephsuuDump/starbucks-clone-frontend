@@ -65,70 +65,62 @@ export function LocationCard({
                 />
             )}
 
-
-
-
             <Card
-            className="
-                w-[240px] h-[260px]
-                flex flex-col overflow-hidden rounded-2xl
-                border border-neutral-200/70 shadow-sm
-                hover:shadow-md transition
-            "
-            >
-            <div className="relative h-[120px] w-full bg-neutral-100">
-                {imageUrl ? (
-                <Image
-                    src={imageUrl}
-                    alt={name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-                    <ImageOff className="h-6 w-6" />
-                </div>
-                )}
-            </div>
-
-            <CardContent className="flex flex-col justify-between flex-1 p-3">
-                <div className="flex flex-col gap-1 overflow-hidden">
-                <h3 className="text-base font-semibold text-neutral-900 break-words">
-                    {name}
-                </h3>
-                <p className="text-sm text-neutral-600 break-words leading-tight">
-                    {location}
-                </p>
+                className="
+                    w-[240px] h-[280px] overflow-hidden rounded-2xl
+                    border border-neutral-200/70 shadow-sm hover:shadow-md transition
+                    flex flex-col
+                "
+                >
+                <div className="relative w-full flex-[0_0_50%]">
+                    {imageUrl ? (
+                    <Image
+                        src={imageUrl}
+                        alt={name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                    ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-neutral-400 bg-gray-100">
+                        <ImageOff className="h-6 w-6" />
+                    </div>
+                    )}
                 </div>
 
-                <div className="mt-3 flex gap-2">
-                <Button
-                    onClick={() => {
-                        setOpenEdit(true)
-                        handleSelected()
-                    }}
-                    variant="secondary"
-                    size="sm"
-                    className="flex-1 h-8 text-sm"
-                >
-                    Edit
-                </Button>
-                <Button
-                    onClick={() => {
-                        setOpenDelete(true)
-                        handleSelected()
-                        
-                    }}
-                    variant="destructive"
-                    size="sm"
-                    className="flex-1 h-8 text-sm"
-                >
-                    Delete
-                </Button>
-                </div>
-            </CardContent>
-            </Card>
+                <CardContent className="flex flex-col justify-between flex-1 p-3">
+                    <div className="flex flex-col gap-1 overflow-hidden">
+                    <h3 className="text-base font-semibold text-neutral-900 break-words">{name}</h3>
+                    <p className="text-sm text-neutral-600 break-words leading-tight">{location}</p>
+                    </div>
+
+                    <div className="mt-3 flex gap-2">
+                    <Button
+                        onClick={() => {
+                        setOpenEdit(true);
+                        handleSelected();
+                        }}
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1 h-8 text-sm"
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        onClick={() => {
+                        setOpenDelete(true);
+                        handleSelected();
+                        }}
+                        variant="destructive"
+                        size="sm"
+                        className="flex-1 h-8 text-sm"
+                    >
+                        Delete
+                    </Button>
+                    </div>
+                </CardContent>
+                </Card>
+
         </>
     );
 }
