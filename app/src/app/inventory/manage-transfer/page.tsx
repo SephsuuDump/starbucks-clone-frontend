@@ -22,7 +22,7 @@ export default function ListTransfer() {
     const [viewing, setViewing] = useState<TransferResponse>();
     const [refresh, setRefresh] = useState<boolean>(false);
     const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
-    const warehouse_id = "235cc413-4694-4d77-a2a0-474431d847c2";
+    const warehouse_id = "ba16a8b1-6693-45f0-8406-6488a97c5725";
 
     async function fetchTransfers(status: TransferStatus) {
         const res = await TransferService.getBySource(warehouse_id, status);
@@ -71,7 +71,6 @@ export default function ListTransfer() {
         <>
             <ProcurementHeader label="Supply Transfer"/>
 
-            {/* PENDING REQUEST TRANSFERS */}
             <div className="flex flex-col bg-white shadow-sm rounded-xl w-full p-6 mt-5">
                 <h1 className="font-bold text-gray-700 text-lg">PENDING REQUEST TRANSFERS</h1>
                 
@@ -123,7 +122,6 @@ export default function ListTransfer() {
                 }
             </div>
 
-            {/* OUT & DELIVERED */}
             <div className="flex flex-col bg-white shadow-sm rounded-xl w-full p-6 mt-5">
                 <h1 className="font-bold text-gray-700 text-lg">OUT AND DELIVERED TRANSFERS</h1>
                 
@@ -170,7 +168,6 @@ export default function ListTransfer() {
                 }
             </div>
 
-            {/* Review Modal */}
             <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
                 <DialogContent className="max-w-lg">
                     <DialogTitle>
@@ -189,9 +186,14 @@ export default function ListTransfer() {
                                 <strong>TO:</strong>{" "}
                                 <span className="text-gray-700">{viewing?.to_branch?.name}</span>
                             </p>
+                             <p className="font-medium">
+                                <strong>Expected Arrival:</strong>{" "}
+                                <span className="text-gray-700">
+                                    {viewing?.expected_arrival}
+                                </span>
+                            </p>
                         </div>
 
-                        {/* Items Table */}
                         <div>
                             <h3 className="font-semibold mb-2">Requested Items</h3>
                             <div className="border rounded-lg overflow-hidden">
@@ -226,7 +228,6 @@ export default function ListTransfer() {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm Dialog */}
             <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                 <DialogContent className="max-w-lg">
                     <DialogTitle>

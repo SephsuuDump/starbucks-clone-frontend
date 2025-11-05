@@ -169,18 +169,23 @@ export default function ListTransfer() {
                 <div className="space-y-5 mt-3 text-sm">
                 <div className="border-b pb-2">
                     <p className="font-medium">
-                    <strong>From Warehouse:</strong>{" "}
-                    <span className="text-gray-700">
-                        {viewing?.from_warehouse?.name}
-                    </span>
+                        <strong>From Warehouse:</strong>{" "}
+                        <span className="text-gray-700">
+                            {viewing?.from_warehouse?.name}
+                        </span>
                     </p>
                     <p className="font-medium">
-                    <strong>TO:</strong>{" "}
-                    <span className="text-gray-700">{viewing?.to_branch?.name}</span>
+                        <strong>TO:</strong>{" "}
+                        <span className="text-gray-700">{viewing?.to_branch?.name}</span>
+                    </p>
+                     <p className="font-medium">
+                        <strong>Expected Arrival:</strong>{" "}
+                        <span className="text-gray-700">
+                            {viewing?.expected_arrival}
+                        </span>
                     </p>
                 </div>
 
-                {/* Items Table */}
                 <div>
                     <h3 className="font-semibold mb-2">Requested Items</h3>
                     <div className="border rounded-lg overflow-hidden">
@@ -215,7 +220,6 @@ export default function ListTransfer() {
             </DialogContent>
             </Dialog>
 
-            {/* Confirm Dialog */}
             <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                 <DialogContent className="max-w-lg">
                     <DialogTitle>

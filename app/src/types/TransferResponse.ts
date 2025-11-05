@@ -2,6 +2,9 @@ export type TransferResponse = {
   id: string;
   status: string;
   total_cost: number;
+  expected_arrival : string,
+  actual_arrival : string;
+  notes: string,
   from_warehouse: {
     id: string;
     name: string;

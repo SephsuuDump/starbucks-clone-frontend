@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ChevronDown, Pencil, PenIcon, Trash, X } from "lucide-react";
+import {Pencil,Trash} from "lucide-react";
 import { ProcurementHeader } from "@/components/custom/procurement/Header";
 import { Warehouse } from "@/types/Warehouse";
 import { WarehouseService } from "@/services/Inventory/WarehouseService";
@@ -12,6 +12,10 @@ import { toast } from "sonner";
 import { InventoryItemService } from "@/services/Inventory/InventoryItemService";
 import { InventoryItems } from "@/types/InventoryItem";
 import { TransferService } from "@/services/Inventory/TransferService";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { Calendar } from "@/components/ui/calendar";
 
 export default function BranchTransferRequest() {
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
@@ -21,8 +25,10 @@ export default function BranchTransferRequest() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [warehouses, setWarehouses]  =  useState<Warehouse[]>([])
   const [inventoryItems, setInventoryItems]  =  useState<InventoryItems[]>([])
+  const [expectedDate, setExpectedDate] = useState<Date | undefined>(undefined);
 
-  const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385    "
+
+  const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
 
   useEffect(() => {
     async function getAllWarehouseAndItem() {
@@ -82,6 +88,7 @@ export default function BranchTransferRequest() {
         from_warehouse : selectedWarehouse,
         to_warehouse : null,
         to_branch : branchId.trim(),
+        expected_arrival : expectedDate,
         items : cart.map(item => ({
             inventory_item_id : String(item.id),
             qty : Number(item.qty)
@@ -124,38 +131,62 @@ export default function BranchTransferRequest() {
 
             </div>
 
-            <div className="flex gap-4 items-center">
-                <select
-                className="border py-2 px rounded-md w-60 text-sm disabled:text-gray-500"
-                value={selectedItem}
-                disabled={availableItems.length === 0}
-                onChange={(e) => setSelectedItem(e.target.value)}
-                
-                >
-                <option value="" className="">Select Item</option>
-                {availableItems.map((i) => (
-                    <option key={i.skuid} value={i.skuid} className="">
-                    {i.name}
-                    </option>
-                ))}
-                </select>
+            <div className="flex justify-between">
+                <div  className="flex gap-4 items-center">
+                     <select
+                    className="border py-2 px rounded-md w-60 text-sm disabled:text-gray-500"
+                    value={selectedItem}
+                    disabled={availableItems.length === 0}
+                    onChange={(e) => setSelectedItem(e.target.value)}
+                    
+                    >
+                    <option value="" className="">Select Item</option>
+                    {availableItems.map((i) => (
+                        <option key={i.skuid} value={i.skuid} className="">
+                        {i.name}
+                        </option>
+                    ))}
+                    </select>
 
-                <Input
-                type="text" // keep it string-based
-                placeholder="Quantity"
-                value={quantity}
-                disabled={!selectedItem}
-                onChange={(e) => {
-                    if (/^[0-9]*$/.test(e.target.value)) {
-                    setQuantity(e.target.value);
-                    }
-                }}
-                className="w-32"
-                />
+                    <Input
+                    type="text"
+                    placeholder="Quantity"
+                    value={quantity}
+                    disabled={!selectedItem}
+                    onChange={(e) => {
+                        if (/^[0-9]*$/.test(e.target.value)) {
+                        setQuantity(e.target.value);
+                        }
+                    }}
+                    className="w-32"
+                    />
 
-                <Button className="!bg-green-900 text-white" onClick={handleAdd}>
-                + Add
-                </Button>
+                    <Button className="!bg-green-900 text-white" onClick={handleAdd}>
+                    + Add
+                 </Button>
+                </div>
+                 <div  className="flex gap-4 items-center">
+                   <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant="outline"
+                        className="w-50 justify-start text-left font-normal"
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {expectedDate ? format(expectedDate, "PPP") : "Pick Expected Date"}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                        mode="single"
+                        selected={expectedDate}
+                        onSelect={setExpectedDate}
+                        />
+                    </PopoverContent>
+                    </Popover>
+
+                </div>
+               
             </div>
 
 
@@ -176,15 +207,12 @@ export default function BranchTransferRequest() {
                     key={item.id}
                     className="grid grid-cols-4 items-center bg-white rounded-md px-4 py-2 shadow-sm border text-sm"
                     >
-                    {/* ID */}
                     <span className="text-xs font-mono text-gray-600 truncate">
                         {item.id}
                     </span>
 
-                    {/* Name */}
                     <span className="font-medium text-gray-800">{item.name}</span>
 
-                    {/* Qty - Editable */}
                     {item.isEditing ? (
                         <Input
                         type="text"
@@ -211,7 +239,6 @@ export default function BranchTransferRequest() {
                            <Pencil /> {item.isEditing ? "Done" : "Edit"}
                         </Button>
 
-                        {/* Remove Button */}
                         <Button
                             variant="ghost"
                             size="sm"
@@ -245,14 +272,15 @@ export default function BranchTransferRequest() {
                         <strong>TO:</strong> <span className="text-gray-700">{branchId}</span>
                         </p>
                         <p className="font-medium">
+                        <strong>Expected Arrival:</strong> <span className="text-gray-700">{expectedDate ? format(expectedDate, "PPP") : "N/A"}</span>
+                        </p>
+                        <p className="font-medium">
                         <strong>From Warehouse:</strong>{" "}
                         <span className="text-gray-700">
                             {warehouses.find((w) => w.id === selectedWarehouse)?.name}
                         </span>
                         </p>
                     </div>
-
-                    {/* Items Table */}
                     <div>
                         <h3 className="font-semibold mb-2">Requested Items</h3>
                         <div className="border rounded-lg overflow-hidden">
