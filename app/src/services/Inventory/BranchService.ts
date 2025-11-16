@@ -6,22 +6,32 @@ const url = `${BASE_URL}/branch`
 
 
 export class BranchService {
-    static async create(body : Branch) {
-        return await requestData(
-            `${url}/create`,
-            'POST',
-            undefined,
-            body
-        )
+    static async create(formdata : FormData) {
+        const res = await fetch(`${url}/create`, {
+        method: "POST",
+        body: formdata,
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || "Failed to create warehouse");
+        }
+
+        return await res.json();
     }
 
-    static async update(updateRequest : Partial<Branch>, id : string) {
-        return await requestData(
-            `${url}/update?id=${id}`,
-            'POST',
-            undefined,
-            updateRequest
-        )
+    static async update(id : string, formdata : FormData) {
+       const res = await fetch(`${url}/update?id=${id}`, {
+        method: "POST",
+        body: formdata,
+        });
+
+        if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to update warehouse");
+        }
+
+        return await res.json();
     }
 
     static async delete(id : string) {

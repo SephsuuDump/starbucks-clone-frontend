@@ -23,11 +23,17 @@ export default function AddLocationModal({
   const [form, setForm] = useState({
     name: "",
     location: "",
+    image: null as File | null,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+
+    if (name === "image" && files) {
+      setForm((prev) => ({ ...prev, image: files[0] }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -40,16 +46,23 @@ export default function AddLocationModal({
         return;
       }
 
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("location", form.location);
+      if (form.image) formData.append("image", form.image);
+
+      console.log(formData)
+
       let data: any = null;
       if (type.toLowerCase() === "branch") {
-        data = await BranchService.create(form as any);
+        data = await BranchService.create(formData);
       } else if (type.toLowerCase() === "warehouse") {
-        data = await WarehouseService.create(form as any);
+        data = await WarehouseService.create(formData);
       }
 
       if (data) {
         toast.success(`Created new ${type} successfully`);
-        reload?.(); // ✅ refresh UI
+        reload?.(); 
         setOpenAdd(false);
       }
     } catch (error) {
@@ -82,6 +95,15 @@ export default function AddLocationModal({
             value={form.location}
             onChange={handleChange}
           />
+
+          <h1 className="text-sm font-bold ms-1">{`${type.charAt(0).toUpperCase() + type.slice(1)} Image:`}</h1>
+          <Input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleChange}
+          />
+
 
           <ModalButton
             type="submit"

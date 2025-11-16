@@ -1,32 +1,38 @@
 import { BASE_URL } from "@/lib/config";
 import { requestData } from "../_main";
+import { Warehouse } from "@/types/Warehouse";
 
 const url = `${BASE_URL}/warehouse`
 
-type Warehouse = {
-    name : string, 
-    location : string
-}
-
-
 export class WarehouseService {
-    static async create(body : Warehouse) {
-        return await requestData(
-                `${url}/create`,
-                'POST',
-                undefined,
-                body
-        )
+    static async create(formData: FormData) {
+        const res = await fetch(`${url}/create`, {
+        method: "POST",
+        body: formData,
+        });
+
+        if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to create warehouse");
+        }
+
+        return await res.json();
     }
 
-    static async update(id : string, body : Warehouse) {
-        return await requestData(
-                `${url}/update?id=${id}`,
-                'POST',
-                undefined,
-                body
-        )
+    static async update(id: string, formData: FormData) {
+        const res = await fetch(`${url}/update?id=${id}`, {
+        method: "POST",
+        body: formData,
+        });
+
+        if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to update warehouse");
+        }
+
+        return await res.json();
     }
+
 
     static async updateStatus(id : string, status :string) {
         return await requestData(

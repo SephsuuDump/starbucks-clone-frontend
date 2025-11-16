@@ -67,7 +67,7 @@ export function LocationCard({
 
             <Card
                 className="
-                    w-[240px] h-[280px] overflow-hidden rounded-2xl
+                    w-[240px] h-[380px] overflow-hidden rounded-2xl
                     border border-neutral-200/70 shadow-sm hover:shadow-md transition
                     flex flex-col
                 "

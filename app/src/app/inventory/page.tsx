@@ -9,9 +9,9 @@ export default function Inventory()  {
     return(
         <div>
             {/* IF BRANCH*/}
-            <BranchInventory />
+            {/* <BranchInventory /> */}
             {/*ELSE */}
-            {/* <WarehouseInventory /> */}
+            <WarehouseInventory />
 
 
         </div>
