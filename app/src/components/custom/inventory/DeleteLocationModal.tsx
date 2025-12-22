@@ -15,7 +15,8 @@ export default function DeleteLocation({
         id,
         setLoading,
         loading, 
-        type
+        type,
+        reload
     } : 
     {
         setOpenDelete :Dispatch<SetStateAction<boolean>>
@@ -24,6 +25,7 @@ export default function DeleteLocation({
         setLoading :Dispatch<SetStateAction<boolean>>,
         loading : boolean,
         type : string
+        reload?: () => void;
     }) {
 
     const [onProcess, setProcess] = useState(false);
@@ -45,6 +47,7 @@ export default function DeleteLocation({
                 toast.success("Deleted Location for " + name);
                 setLoading(!loading);
                 setOpenDelete(false);
+                reload?.(); 
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
@@ -60,7 +63,7 @@ export default function DeleteLocation({
        <Dialog open onOpenChange={setOpenDelete}>
       <DialogContent>
         <DialogTitle>
-          <ProcurementHeader label="Delete Inventory" />
+          <ProcurementHeader label="Delete Location" />
         </DialogTitle>
         <p className=" px-2">Do you want to delete Location <span className="font-semibold">{name}</span>?</p>
         <ModalButton

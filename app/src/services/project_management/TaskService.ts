@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/lib/config";
-import { Task ,TaskPayload } from "@/types/Tasks";
 import { requestData } from "../_main";
+import { TaskPayload } from "@/types/Tasks";
 
 
 const url = `${BASE_URL}/tasks`;
@@ -18,12 +18,23 @@ export class TaskService {
     return await requestData(`${url}/delete-by-id?id=${id}`, "DELETE");
   }
 
-  static async getAll(params?: { project_id?: string;}) {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
-    return await requestData(`${url}/get-all?${query}`, "GET");
+  static async getAll(project_id : string) {
+    return await requestData(`${url}/get-all?project_id=${project_id}`, "GET", undefined, undefined);
+  }
+
+   static async getByEmployee(employee_id : string) {
+    return await requestData(`${url}/get-by-employee?employee_id=${employee_id}`, "GET", undefined, undefined);
   }
 
   static async getById(id: string) {
     return await requestData(`${url}/get-by-id?id=${id}`, "GET");
+  }
+
+  static async respond(id: string, action: "ACCEPT" | "REJECT") {
+    return await requestData(`${url}/respond?id=${id}`, "POST", undefined, { action });
+  }
+
+  static async markDone(id: string) {
+    return await requestData(`${url}/mark-done?id=${id}`, "POST");
   }
 }

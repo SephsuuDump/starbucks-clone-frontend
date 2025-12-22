@@ -2,6 +2,7 @@ export type Warehouse = {
     id : string,
     name : string,
     location : string, 
-    status : string 
+    status : string, 
+    image_url : string
 
 }

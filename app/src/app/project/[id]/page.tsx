@@ -1,85 +1,98 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Project } from "@/types/project";
-import { Task } from "@/types/Tasks";
+
 import { ProjectService } from "@/services/project_management/projectService";
 import { TaskService } from "@/services/project_management/TaskService";
-import { toast } from "sonner";
-import { ProcurementHeader } from "@/components/custom/procurement/Header";
-import { ProjectOverview } from "@/components/custom/project/ProjectOverview";
-import TasksTable from "@/components/custom/project/TaskTable";
+import { ResourceAllocationService } from "@/services/project_management/ResourceAllocationService";
+
+import ProjectHeader from "@/components/custom/project/ProjectHeader";
+import BudgetSection from "@/components/custom/project/BudgetSection";
+import TaskList from "@/components/custom/project/TasksList";
+import AllocateResourceModal from "@/components/custom/project/dialogs/AllocateResourceModal";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import BudgetPanel from "@/components/custom/project/BugdetPanel";
-import { ProjectResources } from "@/components/custom/project/ProjectResources";
-import { AllocateResourceModal } from "@/components/custom/project/AllocateResourceModal";
-import { CreateTaskModal } from "@/components/custom/project/CreateTaskModal";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
-  const [project, setProject] = useState<Project | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [openCreate, setOpenCreate] = useState(false);
+  const projectId = id as string;
 
-  async function load() {
+   const router = useRouter();
+  const [project, setProject] = useState<any>(null);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [allocations, setAllocations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [allocationModalTask, setAllocationModalTask] = useState<any | null>(null);
+
+  async function loadData() {
     try {
-      const proj = await ProjectService.getById(String(id));
-      setProject(proj);
-      const taskList = await TaskService.getAll({ 
-        project_id: String(id)
-      });
-      setTasks(taskList.data || []);
-    } catch (e) {
-      toast.error(`${e}`);
+      setLoading(true);
+
+      const proj = await ProjectService.getById(projectId);
+      const taskRes = await TaskService.getAll(projectId);
+      const allocRes = await ResourceAllocationService.getAll(projectId);
+
+      setProject(proj || null);
+      setTasks(taskRes || []);
+      setAllocations(allocRes?.data || []); 
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    load();
+    if (projectId) {
+      loadData();
+    }
+  }, [projectId]);
 
-  }, [id]);
+  function openAllocationModal(task: any) {
+    setAllocationModalTask(task);
+  }
 
-  async function handleDeleteTask(taskId: string) {
-    try {
-      await TaskService.deleteById(taskId);
-      toast.success("Task deleted");
-      load();
-    } catch (e) {
-      toast.error(`${e}`);
+  function handleAllocationModalOpenChange(open: boolean) {
+    if (!open) {
+      setAllocationModalTask(null);
     }
   }
 
+  if (loading) return <p className="p-6">Loading...</p>;
+  if (!project) return <p className="p-6 text-red-600">Project not found.</p>;
+
   return (
-    <div className="flex flex-col gap-6">
-      <ProcurementHeader label="Project Details" />
+    <div className="p-6 space-y-6">
+        <Button
+        variant="outline"
+        className="flex items-center gap-2 w-fit mb-3"
+        onClick={() => router.push("/project")}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Dashboard
+      </Button>
 
-      {openCreate && (<CreateTaskModal
-        open={openCreate}
-        setOpen={setOpenCreate}
-        projectId={project?.id!}
+
+      <ProjectHeader project={project} />
+
+      <BudgetSection project={project} allocations={allocations} />
+
+      <TaskList
+        tasks={tasks}
+        allocations={allocations}
+        openAllocationModal={openAllocationModal}
       />
-      )}
 
-      {project && (
-        <>
-          <div className=""><ProjectOverview project={project}/></div>
-
-            
-
-          <BudgetPanel project={project} />
-
-          <div className="bg-white rounded-xl shadow-md p-5 flex justify-between">
-            <div className="font-semibold text-gray-800">Tasks</div>
-            <div className="flex gap-2">
-              <Button className="!bg-green-900 text-white"
-              onClick={() => setOpenCreate(true)}>+ Add Task</Button>
-            </div>
-          </div>
-
-          <TasksTable tasks={tasks} projectId={String(id)} onDelete={handleDeleteTask} />
-        </>
+      {allocationModalTask && (
+        <AllocateResourceModal
+          open={!!allocationModalTask}
+          setOpen={handleAllocationModalOpenChange}
+          task={allocationModalTask}
+          projectId={projectId}
+          reload={loadData}
+        />
       )}
     </div>
   );

@@ -18,6 +18,7 @@ export default function LocationUpdateModal({
   setLoading,
   loading,
   type,
+  reload
 }: {
   setOpenEdit: Dispatch<SetStateAction<boolean>>;
   name: string;
@@ -26,16 +27,22 @@ export default function LocationUpdateModal({
   setLoading: Dispatch<SetStateAction<boolean>>;
   loading: boolean;
   type: string;
+  reload?: () => void;
 }) {
   const [onProcess, setProcess] = useState(false);
   const [form, setForm] = useState({
     name: name || "",
     location: location || "",
+    image: null as File | null,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+    if (name === "image" && files) {
+      setForm((prev) => ({ ...prev, image: files[0] })); 
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   }
 
   async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
@@ -43,20 +50,27 @@ export default function LocationUpdateModal({
     setProcess(true);
 
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("location", form.location);
+      if (form.image) formData.append("image", form.image);
+
       let data: any = null;
+
       if (type.toLowerCase() === "branch") {
-        data = await BranchService.update(form, id);
+        data = await BranchService.update(id, formData);
       } else if (type.toLowerCase() === "warehouse") {
-        data = await WarehouseService.update(id, form);
+        data = await WarehouseService.update(id, formData);
       }
+
       if (data) {
         toast.success("Updated Location for " + form.name);
         setLoading(!loading);
         setOpenEdit(false);
+        reload?.();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      toast.error(errorMessage);
+      toast.error(error instanceof Error ? error.message : String(error));
     } finally {
       setProcess(false);
     }
@@ -68,20 +82,33 @@ export default function LocationUpdateModal({
         <DialogTitle>
           <ProcurementHeader label="Update Location" />
         </DialogTitle>
+
         <div className="flex flex-col gap-3 px-2">
+          <h1 className="text-sm font-bold ms-1">{`${type} Name:`}</h1>
           <Input
             name="name"
             value={form.name}
             onChange={handleChange}
             placeholder="Enter name"
           />
+
+          <h1 className="text-sm font-bold ms-1">{`${type} Location:`}</h1>
           <Input
             name="location"
             value={form.location}
             onChange={handleChange}
             placeholder="Enter location"
           />
+
+          <h1 className="text-sm font-bold ms-1">{`${type} Image (optional):`}</h1>
+          <Input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleChange}
+          />
         </div>
+
         <ModalButton
           type="submit"
           className="!bg-green-900"
