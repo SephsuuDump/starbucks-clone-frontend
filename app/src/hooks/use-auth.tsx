@@ -12,6 +12,7 @@ interface AuthContextType {
 const claimsInit = {
     id: '',
     email: '',
+    branchId: '',
     role: '',
     iat: 0, 
     exp: 0, 

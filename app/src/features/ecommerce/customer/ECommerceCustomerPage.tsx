@@ -1,106 +1,102 @@
 "use client"
 
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ProcurementHeader } from "@/features/procurement/components/Header";
-import { useFetchData } from "@/hooks/use-fetch-data";
-import { useSearchFilter } from "@/hooks/use-search-filter";
-import { formatToPeso } from "@/lib/formatter";
-import { ProductService } from "@/services/ecommerce/productService";
-import { ShoppingCart } from "lucide-react";
-import Image from "next/image";
-import { useMemo, useState } from "react";
+import { ShoppingBasket } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { EcommerceSidebar } from "../components/ECommerceSidebar";
+import { EcommerceProducts } from "../components/ECommerceProducts";
+import { toast } from "sonner";
+import { OrderDrawer } from "../components/OrderDrawer";
+import { OrderInvoice } from "../components/OrderInvoice";
+import { useAuth } from "@/hooks/use-auth";
+import { useParams } from "next/navigation";
 
 const categories = ["BAKED", "DESSERTS", "FRAPUCCINO", "FRUITS", "ICED CHOCOLATE", "ICED COFFEE", "ICED ESPRESSO", "ICED TEA", "PASTA", "REFRESHERS", "SANDWICHES"]
 
 export function EcommerceCustomerPage() {
+    const { id } = useParams();
+    const { claims, loading } = useAuth();
+    const [open, setOpen] = useState(false);
+    const [invoice, setInvoice] = useState(false);
     const [tab, setTab] = useState(categories[0]);
-    const [flipped, setFlipped] = useState<Record<number, boolean>>({});
+    const [selectedItems, setSelectedItems] = useState<any>([]);
 
-    const { data, loading } = useFetchData(ProductService.getAllProducts);
-    const { setSearch, filteredItems } = useSearchFilter(data, ['name']);
+    const productsRef = useRef<HTMLDivElement>(null);
 
-    const filteredProducts = useMemo(() => {
-        return filteredItems.filter(item => item.category === tab);
-    }, [tab, filteredItems]);
+    useEffect(() => {
+        const update = () => {
+                if (productsRef.current) {
+                document.documentElement.style.setProperty(
+                    "--products-width",
+                    productsRef.current.offsetWidth + "px"
+                );
+            }
+        };
+        update();
+        window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+    }, []);
+
+    const handleSelect = (item: any) => {
+        const exists = selectedItems.find((i: any) => i.product_id === item.product_id);
+
+        if (exists) {
+            toast.warning('Product already in your bag.')
+        } else {
+            setSelectedItems([...selectedItems, item]);
+            toast.success(`${item.name} added to bag.`)
+        }
+    };
+
+    useEffect(()  => {
+        console.log(selectedItems);
+    }, [selectedItems])
 
     if (loading) return <div>Loading</div>
     return (
-        <section className="flex gap-4 h-screen">
-            <div className="p-4 w-75 h-[95vh] bg-green-900 shadow-sm rounded-md sticky top-0">
-                <div>
-                    <Image
-                        src='/svg/logo2.svg'
-                        alt="Starbucks"
-                        width={150}
-                        height={150}
-                        className="drop-shadow-[0_4px_8px_rgba(255,255,255,0.25)]"
-                    />
-                </div>
-                <div className="flex flex-col mt-4">
-                    {categories.map((item, i) => (
-                        <button 
-                            key={i}
-                            onClick={ () => setTab(item) }
-                            className={`py-2 rounded-sm text-white font-semibold tracking-wider hover:bg-green-800 ${tab === item && "!bg-white !text-orange-900 !font-extrabold"}`}
-                        >
-                            { item }
-                        </button>
-                    ))}
-                </div>
-            </div>
-            <ScrollArea className="w-full">
-                <ProcurementHeader label={ `${tab} Products` } />
-                <Input
-                    placeholder="Search for a product"
-                    className="w-120 bg-white mt-2"
+        <section className="relative flex gap-4 h-screen">
+            <button 
+                onClick={() => setOpen(true)}
+                className="absolute bottom-12 right-8 rounded-full bg-green-200 p-4 shadow-sm cursor-pointer z-50"
+            >
+                {selectedItems.length > 0 && (
+                    <span className="absolute -top-1.5 right-1 flex items-center justify-center 
+                    h-6 w-6 rounded-full bg-green-900 text-white text-xs font-semibold shadow-md p-1">
+                        { selectedItems.length }
+                    </span>
+                )}
+                <ShoppingBasket className="w-8 h-8" />
+            </button>
+
+            <EcommerceSidebar
+                categories={ categories }
+                tab={ tab }
+                setTab={ setTab }
+            />
+
+            <div className="flex-1 relative" ref={productsRef}>
+                <EcommerceProducts
+                    tab={ tab }
+                    id={ String(id) }
+                    handleSelect={ handleSelect }
                 />
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 mt-2">
-                    {filteredProducts.map((item, i) => (
-                        <div
-                            key={i}
-                            className="mb-4 break-inside-avoid cursor-pointer flip-card"
-                            onClick={() => setFlipped(prev => ({ ...prev, [i]: !prev[i] }))}
-                        >
-                            <div className={`flip-inner ${flipped[i] ? "flip-rotate" : ""}`}>
-                                <div className="flip-front bg-white shadow-md overflow-hidden">
-                                    <div className="w-full h-auto relative">
-                                        <Image
-                                            src={item.image_url ?? "/placeholder.png"}
-                                            alt={item.name}
-                                            width={400}
-                                            height={400}
-                                            className="object-cover w-full h-auto"
-                                        />
-                                    </div>
-                                    <div className="p-3 flex flex-col gap-1">
-                                        <h3 className="text-green-900 font-semibold text-sm">{item.name}</h3>
-                                        <p className="text-orange-800 font-extrabold text-xl">
-                                        {formatToPeso(item.price)}
-                                        </p>
-                                    </div>
-                                    <div className="flex">
-                                        <button className="flex-1 text-sm font-bold bg-green-900 text-white py-2 hover:opacity-90 transition">
-                                        Order
-                                        </button>
-                                        <button className="flex-1 text-sm font-bold bg-[#6b4423] text-white py-2 hover:opacity-90 transition">
-                                        Add to Cart
-                                        </button>
-                                    </div>
-                                </div>
+                <OrderDrawer
+                    open={ open } 
+                    setOpen={ setOpen }
+                    selectedItems={ selectedItems }
+                    setSelectedItems={ setSelectedItems }
+                    setInvoice={ setInvoice }
+                />
+            </div>
 
-                                <div className="flip-back absolute inset-0 bg-white shadow-md p-4 text-green-900 flex flex-col">
-                                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                                    <p className="text-sm text-gray-700 mt-4">{item.description}</p>
-                                </div>
-
-                            </div>
-                        </div>
-                    ))}
-                    </div>
-
-
-            </ScrollArea>
+            {invoice && (
+                <OrderInvoice
+                    storeId={ String(id) }
+                    claims={ claims }
+                    setOpen={ setInvoice }
+                    selectedItems={ selectedItems }
+                    setSelectedItems={ setSelectedItems }
+                />
+            )}
         </section>
     )
 }

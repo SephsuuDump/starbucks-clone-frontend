@@ -3,7 +3,7 @@ import { AuthPage } from "../auth/AuthPage";
 import { EmployeePage } from "./EmployeePage";
 import { ManagerPage } from "./ManagerPage";
 import { SupplierPage } from "../procurement/supplier/SuppliersPage";
-import { EcommerceCustomerPage } from "../ecommerce/customer/ECommerceCustomerPage";
+import { EcommerceCustomerLandingPage } from "../ecommerce/EcommerceCustomerLandingPage";
 
 export function DashboardPage() {
     const { claims, loading } = useAuth();
@@ -11,5 +11,5 @@ export function DashboardPage() {
     if (claims.role === 'EMPLOYEE') return <EmployeePage />
     if (claims.role === 'INVENTORY MANAGER') return <ManagerPage />
     if (claims.role === 'SUPPLIER') return <SupplierPage />
-    if (claims.role === 'CUSTOMER') return <EcommerceCustomerPage />
+    if (claims.role === 'CUSTOMER') return <EcommerceCustomerLandingPage />
 }

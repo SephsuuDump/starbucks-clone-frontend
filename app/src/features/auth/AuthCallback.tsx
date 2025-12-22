@@ -27,9 +27,8 @@ export function AuthCallbackPage() {
 
       console.log('User valid:', sessionUser)
 
-      // Call backend here
       try {
-        const res = await fetch("http://localhost:4000/api/auth/oauth-login", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/oauth-login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

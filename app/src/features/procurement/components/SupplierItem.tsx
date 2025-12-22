@@ -4,12 +4,14 @@ import { formatToPeso } from "@/lib/formatter";
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CreateSupplierItem } from "../supplier/CreateSupplierItem";
+import { toast } from "sonner";
 
-export function SupplierItem({ supplyItems, open, setOpen, supplierId }: {
+export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier }: {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     supplierId: string;
     supplyItems: any;
+    supplier: any
 }) {
     const [search, setSearch] = useState('');
     const [filteredSupplies, setFilteredSupplies] = useState<any>([]);
@@ -20,6 +22,15 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId }: {
             ));
         } else  setFilteredSupplies(supplyItems);
     }, [search, supplyItems]);
+
+    function handleOpenAddItem() {
+        if (!supplier.is_active) {
+            toast.error("Your supplier account is not active. You cannot add items.");
+            return;
+        }
+
+        setOpen(true);
+    }
     return(
         <>
             <div className="flex-center-y justify-between">
@@ -29,7 +40,7 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId }: {
                     placeholder="Find supply item by SKU ID or name"
                 />
                 <Button
-                    onClick={ () => setOpen(!open) }
+                    onClick={ handleOpenAddItem }
                     className="!bg-green-900 hover:opacity-90"
                     size="sm"
                 >

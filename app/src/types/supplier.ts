@@ -9,6 +9,8 @@ export interface Supplier {
     logo_url: string;
     description: string;
     total_sales: number;
+    is_active: boolean;
+    user_id: string;
 
     supplier_item?: SupplyItem[];
 }

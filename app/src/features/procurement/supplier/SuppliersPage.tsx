@@ -59,6 +59,7 @@ export function SupplierPage() {
                     setOpen={ setOpen }
                     supplierId={ user.supplier.id }
                     supplyItems={ user.supplier.supplier_item }
+                    supplier={ user.supplier }
                 />
             }   
             {tab === 'ORDERS' &&

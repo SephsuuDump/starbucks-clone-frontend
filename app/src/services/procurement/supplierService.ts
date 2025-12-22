@@ -17,4 +17,22 @@ export class SupplierService {
         );
     }
 
+    static async updateSupplier(supplier: any, id: string) {
+        return await requestData(
+            `${url}/update?id=${id}`,
+            'PUT',
+            undefined,
+            supplier
+        );
+    }
+
+    static async updateActiveState(is_active:boolean, id: string) {
+        return await requestData(
+            `${url}/active?id=${id}`,
+            'PUT',
+            undefined,
+            { is_active: is_active }
+        );
+    }
+
 }

@@ -13,4 +13,5 @@ export interface User {
 export interface AuthCredential {
     email: string;
     password: string;
+    role: string;
 }

@@ -32,7 +32,7 @@ export function InventoryManagerPage() {
                     setDateFilter={ setDateFilter }
                     activeInvoice={ activeInvoice! }
                     setInvoice={ setInvoice }
-                    recentOrder={ data.toReviewOrders }
+                    recentOrder={ data.toReviewOrders || [] }
                 />
                 <InvoicePreview 
                     activeInvoice={ activeInvoice! } 

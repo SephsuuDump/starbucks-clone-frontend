@@ -6,7 +6,7 @@ import Link from "next/link";
 export function EcommerceManagerPage() {
     const ecommerceSummary = [
         { head: 'Total Products', body: '120', href: '/ecommerce/products' },
-        { head: 'Total Orders', body: '120', href: '' },
+        { head: 'Total Orders', body: '120', href: '/ecommerce/orders' },
         { head: 'Total Sales', body: formatToPeso(14000), href: '' },
     ]
     return (
