@@ -4,10 +4,10 @@ export async function requestData(
     headers?: Record<any, any>, 
     body?: any
 ) {
-    console.log('Endpoint:', url);
-    console.log('Method:', method);
-    console.log('Headers:', headers);
-    console.log('Body', body);
+    // console.log('Endpoint:', url);
+    // console.log('Method:', method);
+    // console.log('Headers:', headers);
+    // console.log('Body', body);
     
     const res = await fetch(url, {
         method: method,
