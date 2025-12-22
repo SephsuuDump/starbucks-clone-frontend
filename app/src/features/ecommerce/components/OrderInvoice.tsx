@@ -141,8 +141,8 @@ export function OrderInvoice({ storeId, claims, setOpen, selectedItems, setSelec
 
                     <div className="overflow-y-auto h-[70vh] pb-12">
                         {selectedItems.map(((item: any, i: any) => (
-                            <div className="grid grid-cols-5 border-b-1 border-gray-300" key={i}>
-                                <div className="!bg-white td col-span-2 flex items-center gap-2">
+                            <div className="grid grid-cols-5 border-b border-gray-300" key={i}>
+                                <div className="bg-white td col-span-2 flex items-center gap-2">
                                     <Image
                                         src={ item.image_url }
                                         alt={item.name}
@@ -150,14 +150,14 @@ export function OrderInvoice({ storeId, claims, setOpen, selectedItems, setSelec
                                         height={75}
                                         className="object-cover rounded"
                                     />
-                                    <span className="!text-[16px] font-semibold">{item.name}</span>
+                                    <span className="text-[16px] font-semibold">{item.name}</span>
                                 </div>
-                                <div className="!bg-white td flex-center-y">
+                                <div className="bg-white td flex-center-y">
                                     <X className="w-4 h-4" />
                                     <div className="font-bold text-xl">{item.quantity}</div>
                                 </div>
-                                <div className="!bg-white td">{ formatToPeso(item.unit_price) }</div>
-                                <div className="!bg-white td !text-lg font-semibold">{ formatToPeso(item.unit_price * item.quantity) }</div>
+                                <div className="bg-white td">{ formatToPeso(item.unit_price) }</div>
+                                <div className="bg-white td text-lg font-semibold">{ formatToPeso(item.unit_price * item.quantity) }</div>
                             </div>
                         )))}
                     </div>

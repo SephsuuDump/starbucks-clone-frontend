@@ -105,7 +105,7 @@ export function CustomerAccount() {
                         </div>
                         <Button
                             onClick={ () => setUpdate(data) }
-                            className="!bg-green-900 font-extrabold mt-4 h-8 hover:opacity-90"
+                            className="bg-green-900! font-extrabold mt-4 h-8 hover:opacity-90"
                             size="sm"
                         >
                             EDIT
@@ -143,7 +143,7 @@ export function CustomerAccount() {
             <div className="relative flex mt-10">
                 <button 
                     onClick={ () => setTab('Total') }
-                    className={`w-50 h-50 absolute flex-center flex-col -top-16 left-1/2 -translate-x-1/2 rounded-full border-1 bg-slate-50 shadow-xl ${tab === 'Total' && activeTabCss}`}
+                    className={`w-50 h-50 absolute flex-center flex-col -top-16 left-1/2 -translate-x-1/2 rounded-full border bg-slate-50 shadow-xl ${tab === 'Total' && activeTabCss}`}
                 >
                     <div className="text-7xl font-extrabold scale-x-110">
                         { orders.length }
@@ -152,7 +152,7 @@ export function CustomerAccount() {
                 </button>
                 <button 
                     onClick={ () => setTab('Pending') }
-                    className={`flex-1 flex-center flex-col border-1 bg-slate-50 p-4 rounded-l-xl ${tab === 'Pending' && activeTabCss}`}
+                    className={`flex-1 flex-center flex-col border bg-slate-50 p-4 rounded-l-xl ${tab === 'Pending' && activeTabCss}`}
                 >
                     <div className="text-6xl font-extrabold scale-x-110">
                         { orders.filter((i) => i.status === 'PENDING').length }
@@ -161,7 +161,7 @@ export function CustomerAccount() {
                 </button>
                 <button 
                     onClick={ () => setTab('Completed') }
-                    className={`flex-1 flex-center flex-col border-1 bg-slate-50 p-4 rounded-r-xl ${tab === 'Completed' && activeTabCss}`}
+                    className={`flex-1 flex-center flex-col border bg-slate-50 p-4 rounded-r-xl ${tab === 'Completed' && activeTabCss}`}
                 >
                     <div className="text-6xl font-extrabold scale-x-110">
                         { orders.filter((i) => i.status === 'COMPLETED').length }
