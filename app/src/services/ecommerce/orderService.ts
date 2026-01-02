@@ -12,6 +12,13 @@ export class OrderService {
         );
     }
 
+    static async getOrderById(id: number) {
+        return await requestData(
+            `${orderUrl}/get-by-id?id=${id}`,
+            'GET',
+        );
+    }
+
     static async getByCustomer(id: string) {
         return await requestData(
             `${orderUrl}/get-by-customer?id=${id}`,

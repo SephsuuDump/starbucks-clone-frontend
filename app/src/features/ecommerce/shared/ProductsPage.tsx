@@ -7,7 +7,7 @@ import { ProcurementHeader } from "@/features/procurement/components/Header";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { formatToPeso } from "@/lib/formatter";
 import { ProductService } from "@/services/ecommerce/productService";
-import { CheckCheck, EllipsisVertical, SquarePen, X } from "lucide-react";
+import { ArrowLeft, CheckCheck, EllipsisVertical, SquarePen, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import CreateProduct from "../components/CreateProduct";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -19,44 +19,66 @@ import { EditStock } from "../components/EditStock";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkEdit } from "./components/BulkEdit";
 import { BulkDelete } from "./components/BulkDelete";
+import { Pagination } from "@/components/custom/Pagination";
+import { usePagination } from "@/hooks/use-pagination";
+import ViewProduct from "../components/ViewProduct";
+import { EditProductRequirement } from "../components/EditProductRequirements";
 
 const categories = ["ALL PRODUCTS", "BAKED", "DESSERTS", "FRAPUCCINO", "FRUITS", "ICED CHOCOLATE", "ICED COFFEE", "ICED ESPRESSO", "ICED TEA", "PASTA", "REFRESHERS", "SANDWICHES"]
 
 export function ProductsPage() {
-    const { claims, loading: authLoading } = useAuth();
-    
-    const [reload, setReload] = useState(false);
-    const isManager = claims.role === 'E-COMMERCE MANAGER';
+    const { claims, loading: authLoading } = useAuth()
 
-    const fetchProducts = useFetchData(ProductService.getAllProducts, [reload]);
-    const fetchBranchProducts = useFetchData(ProductService.getByBranch, [reload, claims.branchId], [claims.branchId]);
-    
-    const [filter, setFilter] = useState(categories[0]);
-    const { data: products, loading } = isManager ? fetchProducts : fetchBranchProducts
-    const { setSearch, filteredItems } = useSearchFilter(products, ['name']);
+    const [reload, setReload] = useState(false)
+    const [filter, setFilter] = useState(categories[0])
+    const [open, setOpen] = useState(false)
+    const [toView, setView] = useState();
+    const [toEdit, setEdit] = useState();
+    const [toUpdate, setUpdate] = useState<any>()
+    const [toBulk, setBulk] = useState<any>([])
+    const [toDelete, setDelete] = useState<any>()
+    const [editStock, setEditStock] = useState(false)
+    const [bulkEdit, setBuldEdit] = useState(false)
+    const [bulkDelete, setBuldDelete] = useState(false)
+
+    const isManager = claims?.role === "E-COMMERCE MANAGER"
+
+    const fetchProducts = useFetchData(
+        ProductService.getAllProducts,
+        [reload, isManager]
+    )
+
+    const fetchBranchProducts = useFetchData(
+        ProductService.getByBranch,
+        [reload, isManager],
+        [claims?.branchId]
+    )
+
+    const { data: products = [], loading } =
+        isManager ? fetchProducts : fetchBranchProducts
+
+    const { setSearch, filteredItems } = useSearchFilter(products, ["name"])
 
     const filteredProducts = useMemo(() => {
-        if (filter === "ALL PRODUCTS") return filteredItems;
-        return filteredItems.filter(item => item.category === filter);
-    }, [filter, filteredItems]);
+        if (filter === "ALL PRODUCTS") return filteredItems
+        return filteredItems.filter(item => item.category === filter)
+    }, [filter, filteredItems])
 
-    const [open, setOpen] = useState(false);
-    const [toUpdate, setUpdate] = useState<any>();
-    const [toBulk, setBulk] = useState<any>([]);
-    const [toDelete, setDelete] = useState<any>();
-    const [editStock, setEditStock] = useState(false);
-    const [bulkEdit, setBuldEdit] = useState(false);
-    const [bulkDelete, setBuldDelete] = useState(false);
+    const { page, size, setPage, paginated } =
+        usePagination(filteredProducts, 10)
 
-    useEffect(() => {
-        console.log(toBulk);
-        
-    }, [toBulk]);
+    if (authLoading || loading) return <div>Loading</div>
 
-    if (loading || authLoading) return <div>Loading</div>
     return (
         <section className="w-full flex flex-col gap-2">
-            <ProcurementHeader label="starbucks products" />
+            <div className="flex-center-y gap-4">
+                <ArrowLeft 
+                    onClick={ () => { history.back() } }
+                    className="w-6 h-6 cursor-pointer" 
+                    strokeWidth={3} 
+                />
+                <ProcurementHeader label="starbucks products" />
+            </div>
             <div className="flex flex-wrap items-center gap-2">
                 <div className="w-full sm:w-auto flex-1">
                     <Input
@@ -118,7 +140,7 @@ export function ProductsPage() {
                 </button>
             </div>
 
-            {filteredProducts.map((item: any, i: number) => (
+            {paginated.map((item: any, i: number) => (
                 <div 
                     key={i}
                     className={`flex items-center tdata`}
@@ -156,7 +178,7 @@ export function ProductsPage() {
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem onClick={() => console.log("View")}>
+                                <DropdownMenuItem onClick={ () => setView(item) }>
                                     View
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => setUpdate(item)}>
@@ -193,10 +215,36 @@ export function ProductsPage() {
                 </div>
             ))}
 
+            <Pagination
+                totalItems={ products.length }
+                itemsPerPage={ size }
+                currentPage={ page }
+                onPageChange={ setPage }
+
+            />
+
 
             {open && (
                 <CreateProduct
                     setOpen={ setOpen }
+                    setReload={ setReload }
+                />
+            )}
+
+            {toView && (
+                <ViewProduct  
+                    toEdit={ toEdit }
+                    setEdit={ setEdit }
+                    product={ toView }
+                    setOpen={ setView }
+                />
+            )}
+
+            {toEdit && (
+                <EditProductRequirement 
+                    product={ toEdit }
+                    setOpen={ setEdit }
+                    setView={ setView }
                     setReload={ setReload }
                 />
             )}

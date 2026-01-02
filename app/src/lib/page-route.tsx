@@ -1,4 +1,4 @@
-import { CalendarRange, Landmark, LayoutDashboard, MessageSquareText, ShoppingBasket, ShoppingCart, University } from "lucide-react";
+import { CalendarRange, Landmark, LayoutDashboard, MessageSquareText, PhilippinePeso, ShoppingBasket, ShoppingCart, University } from "lucide-react";
 import { Herr_Von_Muellerhoff } from "next/font/google";
 
 export const employeeDashboard = [
@@ -8,8 +8,8 @@ export const employeeDashboard = [
         href: '/procurement',
     },
     {
-        title: 'E-Commerce',
-        icon: ShoppingCart,
-        href: '/ecommerce'
+        title: 'Sales and Customer Support',
+        icon: PhilippinePeso,
+        href: '/sales'
     }
 ]

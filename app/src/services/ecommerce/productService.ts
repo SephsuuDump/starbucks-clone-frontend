@@ -26,6 +26,15 @@ export class ProductService {
         );
     }
 
+    static async createProductlink(payload: any) {
+        return await requestData(
+            `${url}/create-inventory-link`,
+            'POST',
+            undefined,
+            payload
+        );
+    }
+
     static async updateProduct(formData: any) {
         return await requestFormData(
             `${url}/update-fd`,

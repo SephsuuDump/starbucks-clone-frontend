@@ -78,6 +78,7 @@ export function EcommerceCustomerPage() {
                     tab={ tab }
                     id={ String(id) }
                     handleSelect={ handleSelect }
+                    setInvoice={ setInvoice }
                 />
                 <OrderDrawer
                     open={ open } 

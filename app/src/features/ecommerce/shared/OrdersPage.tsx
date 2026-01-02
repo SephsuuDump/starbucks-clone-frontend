@@ -135,43 +135,58 @@ export function OrdersPage() {
                                                     {order.customer.city}, {order.customer.province}, {order.customer.country}
                                                 </p>
                                             </div>
-
                                             <div>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button
-                                                            size="sm"
-                                                            className="!bg-green-900 hover:opacity-90"
-                                                        >
-                                                            Complete Order
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Complete this order?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                This action will mark the order as completed. Do you want to proceed?
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction
-                                                                onClick={() => handleSubmit(order)}
+                                                <p className="text-muted-foreground text-xs">Mode of Payment</p>
+                                                <div className="flex-center-y gap-2">
+                                                    <img 
+                                                        src={ order.payment_mode ? `/svg/${order.payment_mode}.svg` : "/images/no-payment.png"}
+                                                        className="w-8 h-8"
+                                                    />
+                                                    <div className="uppercase font-medium">{ order.payment_mode ?? "NO PAYMENT METHOD" }</div>
+                                                </div>                                               
+                                            </div>                                    
+                                            <div>
+                                                <p className="text-muted-foreground text-xs">Starbucks Branch</p>
+                                                <p className="font-extrabold">{order.branch.name ?? "Branch not specified"}</p>
+                                            </div>
+                                            { order.status === 'PENDING' && (
+                                                <div>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                size="sm"
                                                                 className="!bg-green-900 hover:opacity-90"
                                                             >
-                                                                Yes, Complete Order
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
+                                                                Complete Order
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Complete this order?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action will mark the order as completed. Do you want to proceed?
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() => handleSubmit(order)}
+                                                                    className="!bg-green-900 hover:opacity-90"
+                                                                >
+                                                                    Yes, Complete Order
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="text-lg font-extrabold text-orange-900">ORDER ITEMS</div>
+                                <div className="text-lg font-extrabold text-orange-900">ORDERED ITEMS</div>
 
                                 <div className="space-y-1">
                                     {order.order_items.map((item: any) => (

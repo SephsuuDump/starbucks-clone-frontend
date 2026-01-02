@@ -10,6 +10,6 @@ export function ECommercePage() {
         
     if (loading) return <div>Loading</div>
     if (claims.role === 'CUSTOMER') return <EcommerceCustomerPage />
-    if (claims.role === 'E-COMMERCE MANAGER') return <EcommerceManagerPage />
-    if (claims.role === 'E-COMMERCE EMPLOYEE') return <EcommerceEmployeePage />
+    // if (claims.role === 'E-COMMERCE MANAGER') return <EcommerceManagerPage />
+    // if (claims.role === 'E-COMMERCE EMPLOYEE') return <EcommerceEmployeePage />
 }

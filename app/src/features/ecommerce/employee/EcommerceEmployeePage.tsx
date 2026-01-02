@@ -11,7 +11,7 @@ export function EcommerceEmployeePage() {
     ]
     return (
         <section className="w-full flex flex-col gap-2">
-            <ProcurementHeader label="E-Commerce" />
+            <ProcurementHeader label="Sales and Customer Support" />
             <div className="flex flex-wrap gap-2">
                 {ecommerceSummary.map((item, i) => (
                     <article 

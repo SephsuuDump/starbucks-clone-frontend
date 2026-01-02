@@ -39,8 +39,7 @@ export default function RootLayout({
         <AuthProvider>
             <SidebarProvider className="text-black">
                 <AppSidebar />
-                    <main className="w-full py-4 px-2 max-w-[1440px] mx-auto">
-                    {/* <SidebarTrigger className="text-black" /> */}
+                <main className="w-full py-4 px-2 max-w-[1440px] mx-auto">
                     {children}
                 </main>
             </SidebarProvider>

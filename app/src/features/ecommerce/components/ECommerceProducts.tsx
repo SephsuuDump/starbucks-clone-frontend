@@ -7,15 +7,16 @@ import { useFetchData } from "@/hooks/use-fetch-data";
 import { useSearchFilter } from "@/hooks/use-search-filter";
 import { formatToPeso } from "@/lib/formatter";
 import { ProductService } from "@/services/ecommerce/productService";
-import { ArrowBigRight, ArrowLeft, Minus, Plus, ShoppingBasket, Stethoscope } from "lucide-react";
+import { ArrowBigRight, ArrowLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { Dispatch, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-export function EcommerceProducts({ tab, handleSelect, id }: {
+export function EcommerceProducts({ tab, handleSelect, id, setInvoice }: {
     tab: string
     handleSelect: (i: any) => void
     id: string
+    setInvoice: any
 }) {
     const [flipped, setFlipped] = useState<Record<number, boolean>>({});
     const [selected, setSelected] = useState<any>();
@@ -107,6 +108,7 @@ export function EcommerceProducts({ tab, handleSelect, id }: {
                         item={ selected }
                         setSelected={ setSelected }
                         handleSelect={ handleSelect }
+                        setInvoice={ setInvoice }
                     />
                 )}
             </div>
@@ -114,10 +116,11 @@ export function EcommerceProducts({ tab, handleSelect, id }: {
     )
 }
 
-function SelectedProduct({ item, setSelected, handleSelect }: {
+function SelectedProduct({ item, setSelected, handleSelect, setInvoice }: {
     item: any
     setSelected: any
     handleSelect: any
+    setInvoice: any
 }) {
     const [qty, setQty] = useState(1);
     return (
@@ -161,6 +164,17 @@ function SelectedProduct({ item, setSelected, handleSelect }: {
                         </div>
                         <div className="flex-center-y gap-2 mt-auto">
                             <Button
+                                onClick={ () => {
+                                    handleSelect({
+                                        product_id: item.id,
+                                        name: item.name,
+                                        quantity: qty,
+                                        unit_price: item.price,
+                                        image_url: item.image_url
+                                    });
+                                    setSelected(undefined)
+                                    setInvoice((prev: any) => !prev)
+                                } }
                                 className="w-32 !bg-orange-900 font-bold tracking-wider"
                             >
                                 BUY NOW
