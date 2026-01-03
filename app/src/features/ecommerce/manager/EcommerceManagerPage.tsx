@@ -37,7 +37,7 @@ export function EcommerceManagerPage() {
         { icon: Quote, count: 10, title: "Quotiations", href: '' },
         { icon: Handshake, count: 10, title: "Support Cases", href: '' },
         { icon: Scale, count: summary.totalDiscounts, title: "Starbucks Discounts", href: '/sales/discounts' },
-        { icon: ChartColumnStacked, count: "————", title: "Reports", href: '' },
+        { icon: ChartColumnStacked, count: "————", title: "Reports", href: '/sales/reports' },
     ] 
     return (
         <section className="w-full flex flex-col gap-2">

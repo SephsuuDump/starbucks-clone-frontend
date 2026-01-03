@@ -17,6 +17,13 @@ export class ProductService {
         );
     }
 
+    static async getBranchProductLogs(id: string) {
+        return await requestData(
+            `${url}/get-product-logs-by-id?id=${id}`,
+            'GET',
+        );
+    }
+
     static async createProduct(formData: any) {
         return await requestFormData(
             `${url}/create-fd`,

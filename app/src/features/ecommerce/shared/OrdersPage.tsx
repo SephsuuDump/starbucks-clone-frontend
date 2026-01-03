@@ -38,6 +38,7 @@ export function OrdersPage() {
     async function handleSubmit(order: any) {
         try {
             const data = await OrderService.processOrder({
+                branchId: order.branch.id,
                 id: order.id,
                 order_items: order.order_items
             });

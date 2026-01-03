@@ -141,7 +141,7 @@ export function CustomersPage() {
                             <div className="font-semibold">
                                 {c.last_name || "—"}, {c.first_name || ""}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground">a
                                 {c.role}
                             </div>
                         </div>

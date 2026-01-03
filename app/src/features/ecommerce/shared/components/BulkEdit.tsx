@@ -52,7 +52,7 @@ export function BulkEdit({ claims, setOpen, toEdit, setEdit }: any) {
                 <div className="flex-center flex-col gap-2">
                     {claims.role === "E-COMMERCE MANAGER" && (
                         <>
-                        <div className="font-semibold text-lg">PLEASE ENTER INCREASE/DECREASE TO PRICE</div>
+                        <div className="font-extrabold text-lg">PLEASE ENTER INCREASE/DECREASE TO PRICE</div>
                         <Input
                             value={price}
                             type="number"
@@ -73,7 +73,7 @@ export function BulkEdit({ claims, setOpen, toEdit, setEdit }: any) {
 
                     {claims.role === "E-COMMERCE EMPLOYEE" && (
                         <>
-                        <div className="font-semibold text-lg">PLEASE ENTER INCREASE/DECREASE TO STOCK</div>
+                        <div className="font-extrabold text-lg">PLEASE ENTER INCREASE ON STOCK</div>
                         <Input
                             value={stock}
                             type="number"

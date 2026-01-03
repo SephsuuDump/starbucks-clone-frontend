@@ -23,6 +23,7 @@ import { Pagination } from "@/components/custom/Pagination";
 import { usePagination } from "@/hooks/use-pagination";
 import ViewProduct from "../components/ViewProduct";
 import { EditProductRequirement } from "../components/EditProductRequirements";
+import { ViewBranchLogs } from "./components/ViewBranchLogs";
 
 const categories = ["ALL PRODUCTS", "BAKED", "DESSERTS", "FRAPUCCINO", "FRUITS", "ICED CHOCOLATE", "ICED COFFEE", "ICED ESPRESSO", "ICED TEA", "PASTA", "REFRESHERS", "SANDWICHES"]
 
@@ -32,6 +33,7 @@ export function ProductsPage() {
     const [reload, setReload] = useState(false)
     const [filter, setFilter] = useState(categories[0])
     const [open, setOpen] = useState(false)
+    const [openLogs, setOpenLogs] = useState();
     const [toView, setView] = useState();
     const [toEdit, setEdit] = useState();
     const [toUpdate, setUpdate] = useState<any>()
@@ -184,16 +186,21 @@ export function ProductsPage() {
                                 <DropdownMenuItem onClick={() => setUpdate(item)}>
                                     Update
                                 </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setBulk((prev: any) => [...prev, item.id])}
+                                >
+                                    Select
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setOpenLogs(item)}
+                                >
+                                    Logs
+                                </DropdownMenuItem>
                                 <DropdownMenuItem 
                                     className="text-red-600 focus:text-red-600"
                                     onClick={() => setDelete(item)}
                                 >
                                     Delete
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setBulk((prev: any) => [...prev, item.id])}
-                                >
-                                    Select
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -228,6 +235,13 @@ export function ProductsPage() {
                 <CreateProduct
                     setOpen={ setOpen }
                     setReload={ setReload }
+                />
+            )}
+
+            {openLogs && (
+                <ViewBranchLogs 
+                    toView={ openLogs }
+                    setView={ setOpenLogs }
                 />
             )}
 
