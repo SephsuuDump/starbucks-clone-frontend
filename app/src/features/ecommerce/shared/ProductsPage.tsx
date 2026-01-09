@@ -45,16 +45,29 @@ export function ProductsPage() {
 
     const isManager = claims?.role === "E-COMMERCE MANAGER"
 
+    const shouldFetchAll = isManager
+    const shouldFetchBranch = !isManager && !!claims?.branchId
+
+
     const fetchProducts = useFetchData(
         ProductService.getAllProducts,
-        [reload, isManager]
-    )
+        [reload, shouldFetchAll],
+        undefined,
+        0,
+        1000,
+        { enabled: shouldFetchAll }
+    );
+
 
     const fetchBranchProducts = useFetchData(
         ProductService.getByBranch,
-        [reload, isManager],
-        [claims?.branchId]
-    )
+        [reload, claims?.branchId],
+        shouldFetchBranch ? [claims.branchId] : undefined,
+        0,
+        1000,
+        { enabled: shouldFetchBranch }
+    );
+
 
     const { data: products = [], loading } =
         isManager ? fetchProducts : fetchBranchProducts
@@ -63,7 +76,7 @@ export function ProductsPage() {
 
     const filteredProducts = useMemo(() => {
         if (filter === "ALL PRODUCTS") return filteredItems
-        return filteredItems.filter(item => item.category === filter)
+        return filteredItems.filter((item: any) => item.category === filter)
     }, [filter, filteredItems])
 
     const { page, size, setPage, paginated } =
@@ -103,6 +116,7 @@ export function ProductsPage() {
                         ))}
                     </SelectContent>
                 </Select>
+
                 {isManager && toBulk.length === 0 && (
                     <Button     
                         onClick={ () => setOpen(true) }
@@ -111,6 +125,7 @@ export function ProductsPage() {
                         Add New
                     </Button>
                 )}
+
                 {toBulk.length > 0 && (
                     <Button
                         className="!bg-green-900"
@@ -119,6 +134,7 @@ export function ProductsPage() {
                         Bulk Update
                     </Button>
                 )}
+
                 {toBulk.length > 0 && (
                     <Button
                         className="!bg-red-900"
@@ -127,6 +143,7 @@ export function ProductsPage() {
                         Bulk Delete
                     </Button>
                 )}
+                
             </div>
 
             <div className="flex items-center thead">

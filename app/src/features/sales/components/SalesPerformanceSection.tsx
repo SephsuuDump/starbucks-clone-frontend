@@ -1,53 +1,97 @@
-import { EmptyState } from "@/components/custom/EmptyState";
-import { Pagination } from "@/components/custom/Pagination";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFetchData } from "@/hooks/use-fetch-data";
-import { usePagination } from "@/hooks/use-pagination";
-import { useSearchFilter } from "@/hooks/use-search-filter";
-import { formatToPeso } from "@/lib/formatter";
-import { SalesReportService } from "@/services/sales/reportService";
-import { useMemo, useState } from "react";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { EmptyState } from "@/components/custom/EmptyState"
+import { Pagination } from "@/components/custom/Pagination"
+import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select"
+import { useFetchData } from "@/hooks/use-fetch-data"
+import { usePagination } from "@/hooks/use-pagination"
+import { useSearchFilter } from "@/hooks/use-search-filter"
+import { formatToPeso } from "@/lib/formatter"
+import { SalesReportService } from "@/services/sales/reportService"
+import { useEffect, useMemo, useState } from "react"
+import {
+    CartesianGrid,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from "recharts"
 
 export function SalesPerformanceSection() {
-    const { data: previousSales, loading: previousSalesLoading } = useFetchData(
-        SalesReportService.getPastMonthSales
-    );
+    const { data: previousSales, loading: previousSalesLoading } =
+        useFetchData(SalesReportService.getPastMonthSales)
 
-    const { data: productSales = [], loading: productSalesLoading } = useFetchData(
-        SalesReportService.getProductMonthlySales
-    )
+    const { data: productSales = [], loading: productSalesLoading } =
+        useFetchData(SalesReportService.getProductMonthlySales)
 
-    const { setSearch, filteredItems } = useSearchFilter(
-        productSales,
-        ["product_name"]
-    )
+    const { setSearch, filteredItems } =
+        useSearchFilter(productSales, ["product_name"])
 
-    const months = useMemo(() => {
-        const unique = new Map()
-        previousSales.forEach((s: any) => {
-        unique.set(s.month, s.month_label)
+    const groupedByMonth = useMemo(() => {
+        const map = new Map<string, any[]>()
+
+        filteredItems.forEach((s: any) => {
+            if (!map.has(s.month)) {
+                map.set(s.month, [])
+            }
+            map.get(s.month)!.push(s)
         })
-        return Array.from(unique.entries())
-    }, [previousSales])
 
-    const [monthFilter, setMonthFilter] = useState<string>("ALL")
+        return Array.from(map.entries()).sort(
+            ([a], [b]) => new Date(b).getTime() - new Date(a).getTime()
+        )
+    }, [filteredItems])
 
-    const filteredSales = useMemo(() => {
-        return filteredItems.filter((s: any) => {
-        return monthFilter === "ALL" || s.month === monthFilter
-        })
-    }, [filteredItems, monthFilter])
+    const monthOptions = useMemo(() => {
+        return groupedByMonth.map(([month, sales]) => ({
+            value: month,
+            label: sales[0].month_label
+        }))
+    }, [groupedByMonth])
 
-    const { page, size, setPage, paginated } = usePagination(filteredSales, 10)
+    const [selectedMonth, setSelectedMonth] = useState<string>("")
 
-    if (previousSalesLoading || productSalesLoading) return <div>Loading</div>
+    useEffect(() => {
+        if (monthOptions.length > 0 && !selectedMonth) {
+            setSelectedMonth(monthOptions[0].value)
+        }
+    }, [monthOptions, selectedMonth])
+
+    const selectedSales = useMemo(() => {
+        return groupedByMonth.find(([month]) => month === selectedMonth)?.[1] ?? []
+    }, [groupedByMonth, selectedMonth])
+
+    const {
+        page,
+        size,
+        setPage,
+        paginated
+    } = usePagination(selectedSales, 10)
+
+    useEffect(() => {
+        setPage(1)
+    }, [selectedMonth])
+
+
+    if (previousSalesLoading || productSalesLoading) {
+        return <div>Loading</div>
+    }
+
     return (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-4 pb-12">
+
             <div className="w-full rounded-lg border bg-white p-5 shadow-xs shadow-green-200">
                 <div className="mb-4">
-                    <h2 className="text-lg font-extrabold text-orange-900">SALES OVERVIEW</h2>
+                    <h2 className="text-lg font-extrabold text-orange-900">
+                        SALES OVERVIEW
+                    </h2>
                     <p className="text-sm text-muted-foreground">
                         Monthly sales and order trends
                     </p>
@@ -73,77 +117,81 @@ export function SalesPerformanceSection() {
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-                <div className="w-full sm:w-auto flex-1">
-                    <Input
-                        type="text"
-                        placeholder="Search product..."
-                        className="w-full bg-white"
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                </div>
+            <div className="text-xl font-extrabold text-orange-900">
+                PRODUCT MONTHLY SALES 
+                <span className="ml-2 text-green-900 text-[16px]">
+                    ({selectedSales[0]?.month_label ?? "—"})
+                </span>
+            </div>
 
-                <Select value={monthFilter} onValueChange={setMonthFilter}>
-                    <SelectTrigger className="w-[180px] bg-white">
+            <div className="flex gap-2">
+                <Input
+                    type="text"
+                    placeholder="Search product..."
+                    className="w-full bg-white"
+                    onChange={e => setSearch(e.target.value)}
+                />
+
+                <Select
+                    value={selectedMonth}
+                    onValueChange={setSelectedMonth}
+                >
+                    <SelectTrigger className="w-[200px] bg-white">
                         <SelectValue placeholder="Select Month" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="ALL">All Months</SelectItem>
-                        {months.map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                                {label}
+                        {monthOptions.map(m => (
+                            <SelectItem key={m.value} value={m.value}>
+                                {m.label}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
             </div>
 
-            <div className="flex items-center thead">
-                <div className="grid grid-cols-4 w-full">
-                    <div className="th">Product</div>
-                    <div className="th">Units Sold</div>
-                    <div className="th">Revenue</div>
-                    <div className="th">Actions</div>
-                </div>
-            </div>
-
-
-            {paginated.length === 0 && (
+            {selectedSales.length === 0 && (
                 <EmptyState title="No sales data found." />
             )}
 
-            {paginated.map((s: any) => (
-                <div
-                    key={`${s.product_id}-${s.month}`}
-                    className="flex items-center tdata"
-                >
-                    <div className="grid grid-cols-4 w-full">
-                        <div className="td font-semibold">
-                            {s.product_name}
-                        </div>
-
-                        <div className="td">
-                            {s.units_sold}
-                        </div>
-
-                        <div className="td font-semibold">
-                            {formatToPeso(s.product_revenue)}
-                        </div>
-
-                        <div className="td">
-                            {/* actions */}
+            {selectedSales.length > 0 && (
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center thead">
+                        <div className="grid grid-cols-3 w-full">
+                            <div className="th">Product</div>
+                            <div className="th">Units Sold</div>
+                            <div className="th">Revenue</div>
                         </div>
                     </div>
+
+                    {paginated.map((s: any) => (
+                        <div
+                            key={`${s.product_id}-${s.month}`}
+                            className="flex items-center tdata"
+                        >
+                            <div className="grid grid-cols-3 w-full">
+                                <div className="td font-semibold">
+                                    {s.product_name}
+                                </div>
+
+                                <div className="td">
+                                    {s.units_sold}
+                                </div>
+
+                                <div className="td font-semibold">
+                                    {formatToPeso(s.product_revenue)}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <Pagination
+                        totalItems={selectedSales.length}
+                        itemsPerPage={size}
+                        currentPage={page}
+                        onPageChange={setPage}
+                    />
                 </div>
-            ))}
-
-
-            <Pagination
-                totalItems={filteredSales.length}
-                itemsPerPage={size}
-                currentPage={page}
-                onPageChange={setPage}
-            />
+            )}
         </section>
     )
 }
@@ -152,15 +200,21 @@ function buildLastMonthsData(
     data: { month: string; sales: number }[],
     monthsBack = 6
 ) {
-    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    const now = new Date()
+    const monthNames = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ]
 
-    const map = new Map(
-        data.map(item => [item.month, item.sales])
-    )
+    const now = new Date()
+    const map = new Map(data.map(item => [item.month, item.sales]))
 
     return Array.from({ length: monthsBack }).map((_, i) => {
-        const d = new Date(now.getFullYear(), now.getMonth() - (monthsBack - 1 - i), 1)
+        const d = new Date(
+            now.getFullYear(),
+            now.getMonth() - (monthsBack - 1 - i),
+            1
+        )
+
         const month = monthNames[d.getMonth()]
 
         return {

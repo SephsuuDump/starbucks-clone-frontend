@@ -28,12 +28,12 @@ export function InventoryEmployeePage() {
 
     useEffect(() => {
         const fetchOrders = async () => {
-        if (!user?.branch?.id || authLoading || userLoading) return;
+        if (!user?.warehouse?.id || authLoading || userLoading) return;
 
         setLoadingOrders(true);
         try {
-            const data = await PurchaseOrderService.getPurchaseOrderByBranch(
-            user.branch.id
+            const data = await PurchaseOrderService.getPurchaseOrderByWarehouse(
+            user.warehouse.id
             );
             setOrders(data);
         } catch (error) {

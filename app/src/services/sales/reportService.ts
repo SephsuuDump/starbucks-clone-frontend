@@ -17,4 +17,27 @@ export class SalesReportService {
             'GET',
         );
     }
+
+    static async getTopProducts() {
+        return await requestData(
+            `${url}/top-products`,
+            'GET',
+        );
+    }
+
+    static async getTopProductsByBranch(id: string) {
+        return await requestData(
+            `${url}/top-products?id=${id}`,
+            'GET',
+        );
+    }
+
+    static async getCustomerProductCount() {
+        return await requestData(
+            `${url}/get-customer-product-count`,
+            'GET',
+        );
+    }
+
+    
 }

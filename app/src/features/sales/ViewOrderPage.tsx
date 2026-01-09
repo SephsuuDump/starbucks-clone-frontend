@@ -4,10 +4,13 @@ import { useFetchOne } from "@/hooks/use-fetch-one"
 import { OrderService } from "@/services/ecommerce/orderService"
 import { useParams } from "next/navigation"
 import { ProcurementHeader } from "../procurement/components/Header";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, File } from "lucide-react";
 import { formatDateTime, formatToPeso } from "@/lib/formatter";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { error } from "console";
 
 export function ViewOrderPage() {
     const { id } = useParams();
@@ -18,8 +21,47 @@ export function ViewOrderPage() {
         [id]
     )
 
-    console.log(order);
-    
+    async function generateInvoice() {
+        try {
+            
+            const response = await fetch(
+                `http://localhost:4000/api/orders/generate-invoice`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/pdf",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(order)
+                }
+            );
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("Invoice error response:", response.status, text);
+                throw new Error(`Failed to generate invoice (${response.status})`);
+            }
+
+
+            const blob = await response.blob(); // ✅ IMPORTANT
+
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `invoice-${order.id}.pdf`; // forces download
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message ?? "Invoice generation failed");
+        }
+    }
+
     if (loading) return <div>Loading</div>
     return (
         <section className="w-full flex flex-col gap-2 pb-8">
@@ -34,9 +76,17 @@ export function ViewOrderPage() {
 
             <div className="bg-white rounded-md shadow-xs p-4 shadow-green-800">
 
-                <h2 className="font-extrabold uppercase text-green-900 mb-2">
-                    Order Information
-                </h2>
+                <div className="flex-center-y justify-between pb-2">
+                    <h2 className="font-extrabold uppercase text-green-900 mb-2">
+                        Order Information
+                    </h2>
+                    <Button 
+                        onClick={generateInvoice}
+                        className="!bg-green-900 font-extrabold hover:opacity-90"
+                    >
+                        <File /> GENERATE INVOICE
+                    </Button>
+                </div>
 
                 <Separator className="mb-3" />
 
@@ -93,6 +143,28 @@ export function ViewOrderPage() {
                         <p className="font-extrabold text-green-900 text-lg">
                             {formatToPeso(order.total_amount)}
                         </p>
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-gray-500 uppercase font-semibold">Discounts</p>
+                        {order.discounts ? (
+                            order.discounts.map((d: any) => (
+                                <p className="font-extrabold text-red-900 uppercase" key={d.id}>
+                                    {d.name}
+                                    {" "}
+                                    (
+                                    {d.type === "Discount Percentage"
+                                        ? `${d.value}%`
+                                        : formatToPeso(d.value)}
+                                    )
+                                </p>
+                            ))
+                        ) : (
+                            <p className="font-extrabold text-gray-500 uppercase">
+                                No Discounts
+                            </p>
+                        )}
+                        
                     </div>
                 </div>
 

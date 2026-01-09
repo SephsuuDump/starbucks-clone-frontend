@@ -19,4 +19,13 @@ export class DiscountService {
             payload
         );
     }
+
+    static async createOrderDiscount(payload: any) {
+        return await requestData(
+            `${url}/create-order-discount`,
+            'POST',
+            undefined,
+            payload
+        );
+    }
 }

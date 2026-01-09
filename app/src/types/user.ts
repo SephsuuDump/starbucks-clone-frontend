@@ -7,6 +7,11 @@ export interface User {
     branch?: {
         id: string,
         name: string,
+    },
+
+    warehouse?: {
+        id: string,
+        name: string,
     }
 }
 

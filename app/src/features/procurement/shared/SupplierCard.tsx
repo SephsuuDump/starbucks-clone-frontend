@@ -99,10 +99,10 @@ export function SupplierCard({ role, supplier }: {
 
                 {supplier.is_active && (
                     <Link
-                        href={role === 'EMPLOYEE' ? `/procurement/purchase-order/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
+                        href={role.includes("EMPLOYEE") ? `/procurement/purchase-order/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
                         className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
                     >
-                        {role === 'EMPLOYEE' ? "ORDER" : "VIEW"}
+                        {role.includes("EMPLOYEE") ? "ORDER" : "VIEW"}
                     </Link>
                 )}
             </div>

@@ -25,6 +25,7 @@ import {
 import { OrderService } from "@/services/ecommerce/orderService"
 import { EmptyState } from "@/components/custom/EmptyState"
 import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
 
 function isWithinDateRange(date: string, range: string) {
     const d = new Date(date)
@@ -176,9 +177,12 @@ export function OrdersPage() {
             {paginated.map((order: any) => (
                 <div key={order.id} className="flex items-center tdata">
                     <div className="grid grid-cols-5 w-full">
-                        <div className="td font-mono text-xs uppercase font-bold">
+                        <Link
+                            href={`/sales/orders/${order.id}`} 
+                            className="td font-mono text-xs uppercase font-bold hover:underline"
+                        >
                             OID-{order.id.slice(0, 16)}…
-                        </div>
+                        </Link>
 
                         <div className="td flex-col !items-start">
                             <div className="font-medium">

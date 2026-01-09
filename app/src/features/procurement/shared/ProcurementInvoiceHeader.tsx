@@ -53,6 +53,7 @@ export function ProcurementInvoiceHeader({ order, setReload, role }: {
                     <div className="text-gray-500 text-sm font-bold">DESTINATION</div>
                     <Separator className="my-1" />
                     <div className="text-sm text-green-900 uppercase font-semibold mb-1">branch: <span className="text-orange-900 font-extrabold">{ order.branch.name }</span></div>
+                    <div className="text-sm text-green-900 uppercase font-semibold mb-1">warehouse: <span className="text-orange-900 font-extrabold">{ order.warehouse.name }</span></div>
                     <div className="text-sm text-gray-500 uppercase font-semibold">order date: <span className="text-black font-extrabold">{ formatDateTime(order.date) }</span></div>
                 </div>
                 <div className="flex-1 bg-slate-50 p-4 rounded-md shadow-sm">
@@ -61,7 +62,7 @@ export function ProcurementInvoiceHeader({ order, setReload, role }: {
                     <div className="text-xl font-extrabold">{ formatToPeso(order.total_cost) }</div>
                     <div className="flex-center-y gap-2 text-sm text-gray-500 uppercase font-semibold my-2">
                         <div>status: </div>
-                        {role === 'EMPLOYEE' && (
+                        {role.includes("EMPLOYEE") && (
                             order.status === 'DELIVERED' ? (
                                 <>
                                     <ProcurementBadge label={order.status} className="!text-sm" />
