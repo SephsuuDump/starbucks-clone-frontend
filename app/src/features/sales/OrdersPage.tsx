@@ -80,7 +80,7 @@ export function OrdersPage() {
         useState<string>(date || "TODAY")
 
     const filteredOrders = useMemo(() => {
-        return filteredItems.filter(order => {
+        return filteredItems.filter((order: any) => {
             const statusMatch =
                 statusFilter === "ALL" || order.status === statusFilter
 

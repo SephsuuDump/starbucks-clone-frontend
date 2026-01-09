@@ -66,45 +66,49 @@ export function SupplierCard({ role, supplier }: {
                     </div>
                 </div>
 
-                {/* EDIT BUTTON NOW OPENS A CONFIRMATION POPUP */}
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            className="text-xs rounded-full bg-green-900 text-white px-3 py-1 h-6"
+                <div className="flex-center-y gap-2">
+                    {role.includes("MANAGER") && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    className="text-xs rounded-full bg-green-900 text-white px-3 py-1 h-6"
+                                >
+                                    EDIT
+                                </Button>
+                            </AlertDialogTrigger>
+
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Verify this supplier?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will change the supplier status to <b>Active</b>.  
+                                        Do you want to continue?
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                        className="!bg-green-900 text-white"
+                                        onClick={() => verifySupplier(true, supplier.id)}
+                                    >
+                                        Yes, Verify Supplier
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+
+                    {supplier.is_active && (
+                        <Link
+                            href={role.includes("EMPLOYEE") ? `/procurement/purchase-order/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
+                            className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
                         >
-                            EDIT
-                        </Button>
-                    </AlertDialogTrigger>
-
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Verify this supplier?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This will change the supplier status to <b>Active</b>.  
-                                Do you want to continue?
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction 
-                                className="!bg-green-900 text-white"
-                                onClick={() => verifySupplier(true, supplier.id)}
-                            >
-                                Yes, Verify Supplier
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-
-                {supplier.is_active && (
-                    <Link
-                        href={role.includes("EMPLOYEE") ? `/procurement/purchase-order/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
-                        className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
-                    >
-                        {role.includes("EMPLOYEE") ? "ORDER" : "VIEW"}
-                    </Link>
-                )}
+                            {role.includes("EMPLOYEE") ? "ORDER" : "VIEW"}
+                        </Link>
+                    )}
+                </div>
+                
             </div>
         </div>
     );

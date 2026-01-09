@@ -50,6 +50,7 @@ export function InventoryEmployeePage() {
     return (
         <section className="flex flex-col gap-2">
             <ProcurementHeader label="purchase orders" />
+            
             <div className="flex-center-y justify-between">
                 <div className="flex-center-y bg-slate-50">
                 {tabs.map((item, i) => (

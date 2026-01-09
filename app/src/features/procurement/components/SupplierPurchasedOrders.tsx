@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { usePagination } from "@/hooks/use-pagination";
+import { EmptyState } from "@/components/custom/EmptyState";
+import { Pagination } from "@/components/custom/Pagination";
 
 const status = ["SENT", "CONFIRMED", "DELIVERED", "CANCELLED"]
 
@@ -15,6 +18,13 @@ export function SupplierPurchasedOrders({ supplierId }: {
 }) {
     const [activeStatus, setActiveStatus] = useState('SENT');
     const [orders, setOrders] = useState<any>([]);
+
+    const {
+        page,
+        size,
+        setPage,
+        paginated,
+    } = usePagination(orders, 10)
 
     useEffect(() => {
         async function fetchData() {
@@ -51,7 +61,7 @@ export function SupplierPurchasedOrders({ supplierId }: {
                 <div className="th">Request Date</div>
             </div>
 
-            {orders.length > 0 && orders.map((item: any, _: number) => (
+            {paginated.length > 0 && paginated.map((item: any, _: number) => (
                 <div 
                     key={_}
                     className="tdata grid grid-cols-4"
@@ -71,7 +81,20 @@ export function SupplierPurchasedOrders({ supplierId }: {
                     <div className="td">{ formatTimestamptzToWords(item.date) }</div>
                 </div>
             ))}
-            {orders.length === 0 && (<div className="col-span-5 text-center text-sm">No purchase orders as of now.</div>)}
+
+            {paginated.length === 0 && (
+                <EmptyState 
+                    title={`No orders found.`}
+                    message="Try adjusting the search filter"
+                />
+            )}
+
+            <Pagination
+                totalItems={orders.length}
+                itemsPerPage={size}
+                currentPage={page}
+                onPageChange={setPage}
+            />
         </>
     );
 }
