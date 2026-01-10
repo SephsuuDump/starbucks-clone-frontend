@@ -10,16 +10,27 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { ProcurementHeader } from "../../procurement/Header";
 import { Input } from "@/components/ui/input";
 import { ProjectService } from "@/services/project_management/projectService";
 import { TaskService } from "@/services/project_management/TaskService";
+import { ProcurementHeader } from "@/features/procurement/components/Header";
 
 const dummyEmployees = [
   { id: "59c9df25-7eb4-4777-b51b-3ad7c52c99e1", name: "John Doe" },
   { id: "20d5fc1e-6402-4fbb-9e58-3dab35d96628", name: "Sarah Cruz" },
   { id: "c3d7538c-bb1c-4346-af22-25759558ce6b", name: "Mark Dela Cruz" },
 ];
+
+function formatDate(date: Date) {
+  return date.toISOString().split("T")[0];
+}
+
+const today = new Date();
+const minProjectStart = formatDate(today);
+
+const oneWeekFromToday = new Date();
+oneWeekFromToday.setDate(today.getDate() + 7);
+const minExpectedEnd = formatDate(oneWeekFromToday);
 
 export default function AddProjectDialog({
   setOpenAdd,
@@ -192,6 +203,7 @@ export default function AddProjectDialog({
                 <Input
                   type="date"
                   className="mt-1"
+                  min={minProjectStart}
                   value={project.start_date}
                   onChange={(e) =>
                     setProject({ ...project, start_date: e.target.value })
@@ -253,8 +265,9 @@ export default function AddProjectDialog({
                         <p className="text-xs text-neutral-500">
                           Ends {task.expected_end || "—"} •{" "}
                           {task.employee_id
-                            ? dummyEmployees.find((e) => e.id === task.employee_id)
-                                ?.name
+                            ? dummyEmployees.find(
+                                (e) => e.id === task.employee_id
+                              )?.name
                             : "No employee"}
                         </p>
                       )}
@@ -271,7 +284,9 @@ export default function AddProjectDialog({
                       <Input
                         placeholder="Task Name"
                         value={task.name}
-                        onChange={(e) => updateTask(i, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateTask(i, "name", e.target.value)
+                        }
                       />
 
                       <Input
@@ -284,7 +299,7 @@ export default function AddProjectDialog({
 
                       <Input
                         type="date"
-                        placeholder="Expected End"
+                        min={minExpectedEnd}
                         value={task.expected_end}
                         onChange={(e) =>
                           updateTask(i, "expected_end", e.target.value)

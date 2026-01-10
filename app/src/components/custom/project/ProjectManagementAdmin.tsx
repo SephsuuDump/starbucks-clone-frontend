@@ -11,14 +11,31 @@ import AddProjectDialog from "./dialogs/AddProjectDialog";
 import EditProjectDialog from "./dialogs/EditProjectDialog";
 import DeleteProjectDialog from "./dialogs/DeleteProjectDialog";
 
+type Tab = "PENDING" | "ONGOING" | "DONE";
+
+function formatStatus(status: string) {
+  return status
+    .toLowerCase()
+    .split("_")
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
+}
+
+function statusBg(status: string) {
+  if (status === "ONGOING") return "bg-blue-100 text-blue-700";
+  if (status === "DONE") return "bg-green-100 text-green-700";
+  if (status === "BUDGET_REJECTED") return "bg-red-100 text-red-700";
+  return "bg-yellow-100 text-yellow-700";
+}
+
 export default function ProjectManagementAdmin() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("PENDING");
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-
   const [selectedProject, setSelectedProject] = useState<ProjectResponse | null>(null);
 
   const loadProjects = async () => {
@@ -28,43 +45,66 @@ export default function ProjectManagementAdmin() {
     setLoading(false);
   };
 
-
   useEffect(() => {
     loadProjects();
   }, []);
 
+  const rejectedProjects = projects.filter(
+    p => p.status === "BUDGET_REJECTED"
+  );
+
+  const filteredProjects = projects.filter(p => {
+    if (activeTab === "ONGOING") return p.status === "ONGOING";
+    if (activeTab === "DONE") return p.status === "DONE";
+    return [
+      "PENDING_BUDGET",
+      "PENDING_TASK_ACCEPTANCE",
+      "PENDING_ALLOCATIONS",
+    ].includes(p.status);
+  });
+
   const total = projects.length;
-
-  const running = projects.filter(
-    (p) => p.status === "ONGOING"
-  ).length;
-
-  const pending = projects.filter((p) =>
+  const running = projects.filter(p => p.status === "ONGOING").length;
+  const pending = projects.filter(p =>
     [
       "PENDING_BUDGET",
       "PENDING_TASK_ACCEPTANCE",
-      "PENDING_ALLOCATIONS"
+      "PENDING_ALLOCATIONS",
     ].includes(p.status)
   ).length;
+  const done = projects.filter(p => p.status === "DONE").length;
 
-  const done = projects.filter(
-    (p) => p.status === "DONE"
-  ).length;
-
+  const tabStyles = {
+    PENDING: {
+      active: "bg-yellow-500 text-white",
+      inactive: "border-yellow-500 text-yellow-600 hover:bg-yellow-50",
+    },
+    ONGOING: {
+      active: "bg-blue-600 text-white",
+      inactive: "border-blue-600 text-blue-600 hover:bg-blue-50",
+    },
+    DONE: {
+      active: "bg-green-600 text-white",
+      inactive: "border-green-600 text-green-600 hover:bg-green-50",
+    },
+  };
 
   return (
     <div className="min-h-screen w-full bg-white p-8">
-      <div className="max-w-[1200px] mx-auto space-y-10">
+      <div className="max-w-[1200px] mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-extrabold">Project Management</h1>
-            <p className="text-sm text-neutral-500">Manage all system-wide projects and track progress</p>
+            <p className="text-sm text-neutral-500">
+              Manage all system-wide projects and track progress
+            </p>
           </div>
 
           <Button className="bg-blue-600 text-white" onClick={() => setOpenAdd(true)}>
             + Add Project
           </Button>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <MetricCard title="Total Projects" value={total} color="blue" />
           <MetricCard title="Running" value={running} color="indigo" />
@@ -72,11 +112,86 @@ export default function ProjectManagementAdmin() {
           <MetricCard title="Completed" value={done} color="green" />
         </div>
 
-        <div className="rounded-xl bg-white shadow-lg p-6 border border-neutral-200">
-          <h2 className="text-xl font-semibold mb-4">Projects</h2>
+        {rejectedProjects.length > 0 && (
+          <div className="border border-red-300 bg-red-50 rounded-xl p-5 space-y-4">
+            <div>
+              <h3 className="font-semibold text-red-700">
+                ⚠ Budget Rejected Projects Require Action
+              </h3>
+              <p className="text-sm text-red-600">
+                Please review and update the budget or remove the project.
+              </p>
+            </div>
 
+            <div className="bg-white rounded-lg border border-red-200 overflow-hidden">
+              <div className="grid grid-cols-4 px-4 py-2 text-xs font-semibold text-red-700 bg-red-100">
+                <span>Project</span>
+                <span>Status</span>
+                <span>Progress</span>
+                <span className="text-center">Action</span>
+              </div>
+
+              {rejectedProjects.map(proj => (
+                <div
+                  key={proj.id}
+                  className="grid grid-cols-4 items-center px-4 py-3 border-t text-sm"
+                >
+                  <span className="font-medium">{proj.name}</span>
+                  <div className={`px-2 py-1 rounded-md w-fit text-xs font-semibold ${statusBg(proj.status)}`}>
+                    {formatStatus(proj.status)}
+                  </div>
+                  <span>{proj.progress}%</span>
+
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      className="bg-yellow-500 text-white px-2 py-1"
+                      onClick={() => {
+                        setSelectedProject(proj);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+
+                    <Button
+                      className="bg-red-600 text-white px-2 py-1"
+                      onClick={() => {
+                        setSelectedProject(proj);
+                        setOpenDelete(true);
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          {(["PENDING", "ONGOING", "DONE"] as Tab[]).map(tab => {
+            const isActive = activeTab === tab;
+            const styles = tabStyles[tab];
+
+            return (
+              <Button
+                key={tab}
+                variant="outline"
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 ${
+                  isActive ? styles.active : styles.inactive
+                }`}
+              >
+                {tab}
+              </Button>
+            );
+          })}
+        </div>
+
+        <div className="rounded-xl bg-white shadow-lg p-6 border border-neutral-200">
           <ProjectTable
-            data={projects}
+            data={filteredProjects}
             loading={loading}
             setSelectedProject={setSelectedProject}
             setOpenEdit={setOpenEdit}
@@ -87,8 +202,8 @@ export default function ProjectManagementAdmin() {
         {openAdd && (
           <AddProjectDialog
             setOpenAdd={setOpenAdd}
-            setLoading={setLoading}
             loading={loading}
+            setLoading={setLoading}
             reload={loadProjects}
           />
         )}
@@ -97,8 +212,8 @@ export default function ProjectManagementAdmin() {
           <EditProjectDialog
             setOpenEdit={setOpenEdit}
             project={selectedProject}
-            setLoading={setLoading}
             loading={loading}
+            setLoading={setLoading}
             reload={loadProjects}
           />
         )}
@@ -107,8 +222,8 @@ export default function ProjectManagementAdmin() {
           <DeleteProjectDialog
             setOpenDelete={setOpenDelete}
             project={selectedProject}
-            setLoading={setLoading}
             loading={loading}
+            setLoading={setLoading}
             reload={loadProjects}
           />
         )}
@@ -141,7 +256,6 @@ function MetricCard({
   );
 }
 
-
 function ProjectTable({
   data,
   loading,
@@ -157,65 +271,56 @@ function ProjectTable({
 }) {
   if (loading) {
     return (
-      <div className="w-full h-48 flex items-center justify-center text-neutral-500">
+      <div className="h-40 flex items-center justify-center text-neutral-500">
         Loading projects...
       </div>
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!data.length) {
     return (
-      <div className="w-full h-48 flex items-center justify-center text-neutral-500 text-lg">
+      <div className="h-40 flex items-center justify-center text-neutral-500">
         No projects found
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-3">
-      {data.map((proj) => (
+    <div className="space-y-3">
+      {data.map(proj => (
         <div
           key={proj.id}
-          className="grid grid-cols-4 items-center px-4 py-3 border rounded-lg
-          bg-neutral-50 hover:bg-neutral-100 transition shadow-sm"
+          className="grid grid-cols-4 items-center px-4 py-3 border rounded-lg bg-neutral-50"
         >
           <div className="font-semibold">{proj.name}</div>
 
-          <div>
-            <span
-              className={`px-2 py-1 rounded-md text-xs font-semibold ${
-                proj.status === "DONE"
-                  ? "bg-green-100 text-green-700"
-                  : proj.status === "ONGOING"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-yellow-100 text-yellow-700"
-              }`}
-            >
-              {proj.status}
-            </span>
+          <div className={`px-2 py-1 rounded-md w-fit text-xs font-semibold ${statusBg(proj.status)}`}>
+            {formatStatus(proj.status)}
           </div>
 
           <div className="font-semibold">{proj.progress}%</div>
 
           <div className="flex justify-center gap-2">
             <Link href={`/project/${proj.id}`}>
-              <Button className="!bg-blue-600 text-white px-2 py-1 hover:opacity-90">
+              <Button className="bg-blue-600 text-white px-2 py-1">
                 <Eye className="w-4 h-4" />
               </Button>
             </Link>
 
-            <Button
-              className="!bg-yellow-500 text-white px-2 py-1 hover:opacity-90"
-              onClick={() => {
-                setSelectedProject(proj);
-                setOpenEdit(true);
-              }}
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
+            {proj.status !== "DONE" && (
+              <Button
+                className="bg-yellow-500 text-white px-2 py-1"
+                onClick={() => {
+                  setSelectedProject(proj);
+                  setOpenEdit(true);
+                }}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+            )}
 
             <Button
-              className="!bg-red-600 text-white px-2 py-1 hover:opacity-90"
+              className="bg-red-600 text-white px-2 py-1"
               onClick={() => {
                 setSelectedProject(proj);
                 setOpenDelete(true);
@@ -229,4 +334,3 @@ function ProjectTable({
     </div>
   );
 }
-

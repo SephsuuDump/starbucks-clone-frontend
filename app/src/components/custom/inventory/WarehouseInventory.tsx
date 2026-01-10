@@ -1,9 +1,9 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Plus, Trash2, Filter } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Trash2, Filter, Eye } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { ProcurementHeader } from "../procurement/Header"
+
 import { useEffect, useState } from "react"
 import { Inventory } from "@/types/Inventory"
 import { InventoryService } from "@/services/Inventory/InventoryService"
@@ -12,6 +12,8 @@ import { Page } from "@/types/page"
 import DeleteInventoryModal from "./DeleteInventoryModal"
 import AddQuantityModal from "./AddQuantity"
 import { AddInventoryModal, fetchAllInventory } from "./AddInventoryModal"
+import { ProcurementHeader } from "@/features/procurement/components/Header"
+import { useAuth } from "@/hooks/use-auth"
 
 export function categorizeInventory(inventory: Inventory[]) {
   const low: Inventory[] = []
@@ -39,6 +41,7 @@ export function categorizeInventory(inventory: Inventory[]) {
 }
 
 export function WarehouseInventory() {
+    const {claims,  loading : authLoading} = useAuth();
     const [inventory, setInventory] = useState<Inventory[]>([])
     const [page, setPage] = useState<Page>({ page: 1, limit: 10 })
     const [totalPages, setTotalPages] = useState(0)
@@ -79,7 +82,7 @@ export function WarehouseInventory() {
           toast.error(`${e}`)
         }
       }
-      getInventory("ba16a8b1-6693-45f0-8406-6488a97c5725")
+      getInventory(claims.warehouseId!)
     }, [page, loading, debouncedSearch])
 
     let filteredInventory = [...inventory]
@@ -118,7 +121,7 @@ export function WarehouseInventory() {
         )}
         {openAddInventory && (
           <AddInventoryModal
-            id="ba16a8b1-6693-45f0-8406-6488a97c5725"
+            id={claims.warehouseId!}
             open={openAddInventory}
             setOpen={setOpenAddInventory}
             currentInventory={inventory}
@@ -178,11 +181,20 @@ export function WarehouseInventory() {
                 <Button
                   className="bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium"
                   onClick={() =>
-                    (window.location.href = "/inventory/transfer-request")
+                    (window.location.href = "/inventory/manage-transfer")
                   }
                 >
-                  Request Transfer
+                  <Eye> </Eye> View Transfer Request
                 </Button>
+                <Button
+                  className="bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium"
+                  onClick={() =>
+                    (window.location.href = "/procurement/suppliers")
+                  }
+                >
+                  Request to Suppliers
+                </Button>
+                
               </div>
             </div>
           </div>

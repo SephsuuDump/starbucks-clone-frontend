@@ -8,7 +8,8 @@ import { Plus } from "lucide-react";
 import { ModalButton } from "@/components/ui/button";
 import { BranchService } from "@/services/Inventory/BranchService";
 import { WarehouseService } from "@/services/Inventory/WarehouseService";
-import { ProcurementHeader } from "../../procurement/Header";
+import { ProcurementHeader } from "@/features/procurement/components/Header";
+
 
 export default function AddLocationModal({
   setOpenAdd,
@@ -76,7 +77,8 @@ export default function AddLocationModal({
     <Dialog open onOpenChange={setOpenAdd}>
       <DialogContent className="rounded-xl shadow-xl">
         <DialogTitle>
-          <ProcurementHeader label={`Add ${type.charAt(0).toUpperCase() + type.slice(1)}`} />
+          <ProcurementHeader
+           label={`Add ${type.charAt(0).toUpperCase() + type.slice(1)}`} />
         </DialogTitle>
 
         <form className="flex flex-col gap-3 mt-3 px-2" onSubmit={handleSubmit}>

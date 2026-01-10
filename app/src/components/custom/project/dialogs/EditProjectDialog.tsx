@@ -5,10 +5,10 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ModalButton } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { ProcurementHeader } from "../../procurement/Header";
 import { Input } from "@/components/ui/input";
 import { ProjectService } from "@/services/project_management/projectService";
 import { ProjectResponse } from "@/types/project";
+import { ProcurementHeader } from "@/features/procurement/components/Header";
 
 export default function EditProjectDialog({
   setOpenEdit,
@@ -26,25 +26,34 @@ export default function EditProjectDialog({
   const [form, setForm] = useState({
     name: project?.name || "",
     description: project?.description || "",
-    end_date: project?.end_date?.slice(0, 10) || "", 
+    end_date: project?.end_date?.slice(0, 10) || "",
     budget: String(project?.budget || "")
   });
 
   const [onProcess, setProcess] = useState(false);
-  const isBudgetLocked = project.status !== "PENDING_BUDGET";
 
+  const isDone = project.status === "DONE";
+  const isRejected = project.status === "BUDGET_REJECTED";
+
+  const canEditFields = !isDone;
+  const canEditBudget = isRejected;
 
   async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     setProcess(true);
 
     try {
-      await ProjectService.update(project.id, {
+      const payload: any = {
         name: form.name,
         description: form.description,
-        end_date: form.end_date || null,  
-         ...(isBudgetLocked ? {} : { budget: Number(form.budget) || 0 })
-      });
+        end_date: form.end_date || null,
+      };
+
+      if (canEditBudget) {
+        payload.budget = Number(form.budget) || 0;
+      }
+
+      await ProjectService.update(project.id, payload);
 
       toast.success("Project Updated!");
       setLoading(!loading);
@@ -71,6 +80,7 @@ export default function EditProjectDialog({
               className="mt-1"
               placeholder="Project Name"
               value={form.name}
+              disabled={!canEditFields}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </div>
@@ -81,6 +91,7 @@ export default function EditProjectDialog({
               className="mt-1"
               placeholder="Description"
               value={form.description}
+              disabled={!canEditFields}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
           </div>
@@ -91,6 +102,7 @@ export default function EditProjectDialog({
               type="date"
               className="mt-1"
               value={form.end_date}
+              disabled={!canEditFields}
               onChange={(e) => setForm({ ...form, end_date: e.target.value })}
             />
           </div>
@@ -102,21 +114,28 @@ export default function EditProjectDialog({
               className="mt-1"
               placeholder="Budget"
               value={form.budget}
-              disabled={isBudgetLocked}
+              disabled={!canEditBudget}
               onChange={(e) => setForm({ ...form, budget: e.target.value })}
             />
+            {!canEditBudget && (
+              <p className="text-xs text-gray-500 mt-1">
+                Budget can only be edited if rejected by finance.
+              </p>
+            )}
           </div>
         </div>
 
-        <ModalButton
-          type="submit"
-          icon={Plus}
-          className="!bg-yellow-600"
-          label="Save Changes"
-          loadingLabel="Saving..."
-          onProcess={onProcess}
-          onClick={handleSubmit}
-        />
+        {!isDone && (
+          <ModalButton
+            type="submit"
+            icon={Plus}
+            className="!bg-yellow-600"
+            label="Save Changes"
+            loadingLabel="Saving..."
+            onProcess={onProcess}
+            onClick={handleSubmit}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

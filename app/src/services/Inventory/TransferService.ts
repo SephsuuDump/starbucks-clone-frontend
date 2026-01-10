@@ -23,18 +23,18 @@ export class TransferService {
         )
     }
 
-    static async getByDestination(destination : string, status : string) {
+    static async getByDestination(destination : string, status : string, page : number, limit: number) {
          return await requestData(
-            `${url}/get-by-destination?destination=${destination}&status=${status}`,
+            `${url}/get-by-destination?destination=${destination}&status=${status}&page=${page}&limit=${limit}`,
             'GET',
             undefined,
             undefined
         )
     }
 
-    static async getBySource(source: string, status : string) {
+    static async getBySource(source: string, status : string, page: number, limit : number) {
          return await requestData(
-            `${url}/get-by-source?source=${source}&status=${status}`,
+            `${url}/get-by-source?source=${source}&status=${status}&page=${page}&limit=${limit}`,
             'GET',
             undefined,
             undefined

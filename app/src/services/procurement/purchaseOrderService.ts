@@ -40,6 +40,13 @@ export class PurchaseOrderService {
         );
     }
 
+    static async getPurchaseOrderByWarehouse(id: string) {
+        return await requestData(
+            `${url}/get-by-warehouse?id=${id}`,
+            'GET',
+        );
+    }
+
     static async getBySupplierStatus(status: any) {
         return await requestData(
             `${url}/get-by-supplier-status`,

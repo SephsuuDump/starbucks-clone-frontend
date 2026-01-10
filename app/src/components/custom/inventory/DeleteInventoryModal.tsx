@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ModalButton } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { ProcurementHeader } from "../procurement/Header";
+
 import { InventoryService } from "@/services/Inventory/InventoryService";
+import { ProcurementHeader } from "@/features/procurement/components/Header";
 
 
 export default function DeleteInventoryModal({

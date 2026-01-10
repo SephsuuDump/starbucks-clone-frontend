@@ -1,20 +1,35 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function TaskList({
   tasks,
   allocations,
-  openAllocationModal
+  openAllocationModal,
+  onAddTask,
 }: {
   tasks: any[];
   allocations: any[];
   openAllocationModal: (task: any) => void;
+  onAddTask?: () => void;
 }) {
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow border border-neutral-200 dark:border-neutral-700">
-      <h2 className="text-xl font-semibold mb-4">Tasks</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Tasks</h2>
+
+        {onAddTask && (
+          <Button
+            className="flex items-center gap-2 bg-blue-600 text-white"
+            onClick={onAddTask}
+          >
+            <Plus className="w-4 h-4" />
+            Add Task
+          </Button>
+        )}
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -70,16 +85,17 @@ export default function TaskList({
                     <Badge variant="outline">{task.status}</Badge>
                   </td>
 
-                <td className="py-3">
-                  <button
-                    onClick={() => openAllocationModal(task)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 
-                              dark:hover:text-blue-300 text-sm font-medium gap-1"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    Allocate
-                  </button>
-                </td>
+                  <td className="py-3">
+                    <button
+                      onClick={() => openAllocationModal(task)}
+                      className="flex items-center text-blue-600 hover:text-blue-800 
+                                 dark:text-blue-400 dark:hover:text-blue-300 
+                                 text-sm font-medium gap-1"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      Allocate
+                    </button>
+                  </td>
                 </tr>
               );
             })}

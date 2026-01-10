@@ -1,44 +1,140 @@
 'use client'
 
-import { ProcurementHeader } from "@/components/custom/procurement/Header"
 import { Button } from "@/components/ui/button"
 import { TransferService } from "@/services/Inventory/TransferService"
 import { TransferResponse } from "@/types/TransferResponse"
-import { Truck, PackageCheck, Clock, ScanEye, ClipboardCheck, Divide } from "lucide-react"
+import { Truck, PackageCheck, Clock, ScanEye, ClipboardCheck, Building2, Badge, Warehouse } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
+import { ProcurementHeader } from "@/features/procurement/components/Header"
+import { useAuth } from "@/hooks/use-auth"
+import { useRouter } from "next/navigation"
+
 
 type TransferStatus = "PENDING" | "APPROVED" | "OUT" | "DELIVERED"
 
-export default function ListTransfer() {
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number
+  totalPages: number
+  onChange: (p: number) => void
+}) {
+  const isFirst = page <= 1
+  const isLast = page >= totalPages
+
+  return (
+    <div className="flex justify-center items-center gap-4 mt-6 text-sm text-gray-600">
+      <button
+        disabled={isFirst}
+        onClick={() => onChange(page - 1)}
+        className={`px-2 ${
+          isFirst ? "text-gray-300 cursor-not-allowed" : "hover:text-black"
+        }`}
+      >
+        ‹
+      </button>
+
+      <span>
+        Page {page} of {totalPages}
+      </span>
+
+      <button
+        disabled={isLast}
+        onClick={() => onChange(page + 1)}
+        className={`px-2 ${
+          isLast ? "text-gray-300 cursor-not-allowed" : "hover:text-black"
+        }`}
+      >
+        ›
+      </button>
+    </div>
+  )
+}
+
+export default function Page() {
+  const { claims, loading } = useAuth()
+  const PAGE_SIZE = 5
+  const router = useRouter()
+
+  const destinationId = claims?.branchId ?? claims?.warehouseId
+
+  const [activeStatus, setActiveStatus] = useState<TransferStatus>("PENDING")
+
   const [transfers, setTransfers] = useState<Record<TransferStatus, TransferResponse[]>>({
     PENDING: [],
     APPROVED: [],
     OUT: [],
     DELIVERED: [],
   })
+
+  const [pageByStatus, setPageByStatus] = useState<Record<TransferStatus, number>>({
+    PENDING: 1,
+    APPROVED: 1,
+    OUT: 1,
+    DELIVERED: 1,
+  })
+
+  const [metaByStatus, setMetaByStatus] = useState<Record<
+    TransferStatus,
+    { totalPages: number; total: number }
+  >>({
+    PENDING: { totalPages: 1, total: 0 },
+    APPROVED: { totalPages: 1, total: 0 },
+    OUT: { totalPages: 1, total: 0 },
+    DELIVERED: { totalPages: 1, total: 0 },
+  })
+
   const [reviewOpen, setReviewOpen] = useState(false)
   const [viewing, setViewing] = useState<TransferResponse | null>(null)
-  const [refresh, setRefresh] = useState(false)
-  const branchId = "7e42ef23-002b-4d39-8d12-9101bbaf2385"
 
   async function fetchTransfers(status: TransferStatus) {
+    if (!destinationId) return
+
+    const page = pageByStatus[status]
+
     try {
-      const res = await TransferService.getByDestination(branchId, status)
-      setTransfers((prev) => ({ ...prev, [status]: res || [] }))
+      const res = await TransferService.getByDestination(
+        destinationId,
+        status,
+        page,
+        PAGE_SIZE
+      )
+
+      setTransfers((prev) => ({
+        ...prev,
+        [status]: res.data || [],
+      }))
+
+      setMetaByStatus((prev) => ({
+        ...prev,
+        [status]: {
+          totalPages: res.meta.totalPages,
+          total: res.meta.total,
+        },
+      }))
     } catch {
       setTransfers((prev) => ({ ...prev, [status]: [] }))
     }
   }
 
   useEffect(() => {
+    if (loading || !destinationId) return
+
     fetchTransfers("PENDING")
     fetchTransfers("APPROVED")
     fetchTransfers("OUT")
     fetchTransfers("DELIVERED")
-  }, [refresh])
+  }, [destinationId, loading])
+
+  useEffect(() => {
+    if (!destinationId) return
+    fetchTransfers(activeStatus)
+  }, [activeStatus, pageByStatus[activeStatus], destinationId])
 
   async function handleViewing(id: string) {
     if (!id) return toast.error("ID is required")
@@ -55,10 +151,19 @@ export default function ListTransfer() {
 
   async function handleReceived(id: string) {
     if (!id) return toast.error("ID is required")
+
     try {
-      const data = await TransferService.updateStatus(id, "DELIVERED")
-      if (data) toast.success(`Transfer ${id} marked as Delivered`)
-      setRefresh((prev) => !prev)
+      await TransferService.updateStatus(id, "DELIVERED")
+      toast.success("Transfer marked as Delivered")
+
+      setPageByStatus((prev) => ({
+        ...prev,
+        OUT: 1,
+        DELIVERED: 1,
+      }))
+
+      fetchTransfers("OUT")
+      fetchTransfers("DELIVERED")
     } catch (e) {
       toast.error(`${e}`)
     }
@@ -66,66 +171,87 @@ export default function ListTransfer() {
 
   return (
     <div className="w-full min-h-screen bg-white p-8 flex flex-col gap-8">
-      <ProcurementHeader label="My Supply Transfers" />
+      <div className="flex items-center justify-between">
+        <ProcurementHeader label="My Orders" />
 
+        <Button
+          variant="outline"
+          className="rounded-xl"
+          onClick={() => router.push("/inventory")}
+        >
+          Back to Inventory
+        </Button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-        <StatusCard
-          color="bg-yellow-50 border-yellow-200"
-          icon={<Clock className="w-5 h-5 text-yellow-600" />}
-          title="Pending"
-          count={transfers.PENDING.length}
-        />
-        <StatusCard
-          color="bg-teal-50 border-teal-200"
-          icon={<ClipboardCheck className="w-5 h-5 text-teal-600" />}
-          title="Approved"
-          count={transfers.APPROVED.length}
-        />
-        <StatusCard
-          color="bg-blue-50 border-blue-200"
-          icon={<Truck className="w-5 h-5 text-blue-600" />}
-          title="Out for Delivery"
-          count={transfers.OUT.length}
-        />
-        <StatusCard
-          color="bg-green-50 border-green-200"
-          icon={<PackageCheck className="w-5 h-5 text-green-600" />}
-          title="Delivered"
-          count={transfers.DELIVERED.length}
-        />
+        <div onClick={() => setActiveStatus("PENDING")} className="cursor-pointer">
+          <StatusCard
+            color="bg-yellow-50 border-yellow-200"
+            icon={<Clock className="w-5 h-5 text-yellow-600" />}
+            title="Pending"
+            count={metaByStatus.PENDING.total}
+          />
+        </div>
+
+        <div onClick={() => setActiveStatus("APPROVED")} className="cursor-pointer">
+          <StatusCard
+            color="bg-teal-50 border-teal-200"
+            icon={<ClipboardCheck className="w-5 h-5 text-teal-600" />}
+            title="Approved"
+            count={metaByStatus.APPROVED.total}
+          />
+        </div>
+
+        <div onClick={() => setActiveStatus("OUT")} className="cursor-pointer">
+          <StatusCard
+            color="bg-blue-50 border-blue-200"
+            icon={<Truck className="w-5 h-5 text-blue-600" />}
+            title="Out for Delivery"
+            count={metaByStatus.OUT.total}
+          />
+        </div>
+
+        <div onClick={() => setActiveStatus("DELIVERED")} className="cursor-pointer">
+          <StatusCard
+            color="bg-green-50 border-green-200"
+            icon={<PackageCheck className="w-5 h-5 text-green-600" />}
+            title="Delivered"
+            count={metaByStatus.DELIVERED.total}
+          />
+        </div>
       </div>
 
-      {/* Sectioned Lists */}
       <TransferSection
-        title="Pending Transfers"
-        color="text-yellow-700"
-        transfers={transfers.PENDING}
+        title={
+          activeStatus === "PENDING"
+            ? "Pending Transfers"
+            : activeStatus === "APPROVED"
+            ? "Approved Transfers"
+            : activeStatus === "OUT"
+            ? "Out for Delivery"
+            : "Delivered Orders"
+        }
+        color={
+          activeStatus === "PENDING"
+            ? "text-yellow-700"
+            : activeStatus === "APPROVED"
+            ? "text-teal-700"
+            : activeStatus === "OUT"
+            ? "text-blue-700"
+            : "text-green-700"
+        }
+        transfers={transfers[activeStatus]}
         onView={handleViewing}
+        onAction={activeStatus === "OUT" ? handleReceived : undefined}
       />
 
-      <TransferSection
-        title="Approved Transfers"
-        color="text-teal-700"
-        transfers={transfers.APPROVED}
-        onView={handleViewing}
+      <Pagination
+        page={pageByStatus[activeStatus]}
+        totalPages={metaByStatus[activeStatus].totalPages}
+        onChange={(p) =>
+          setPageByStatus((prev) => ({ ...prev, [activeStatus]: p }))
+        }
       />
 
-      <TransferSection
-        title="Out for Delivery"
-        color="text-blue-700"
-        transfers={transfers.OUT}
-        onView={handleViewing}
-        onAction={handleReceived}
-      />
-
-      <TransferSection
-        title="Delivered Orders"
-        color="text-green-700"
-        transfers={transfers.DELIVERED}
-        onView={handleViewing}
-      />
-
-      {/* Receipt Modal */}
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <DialogContent className="max-w-lg rounded-2xl">
           <DialogTitle>
@@ -138,23 +264,32 @@ export default function ListTransfer() {
                 <strong>From Warehouse:</strong>{" "}
                 {viewing?.from_warehouse?.name ?? "N/A"}
               </p>
-              <p>
-                <strong>To Branch:</strong>{" "}
-                {viewing?.to_branch?.name ?? "N/A"}
-              </p>
+
+              {viewing?.to_branch ? (
+                <p>
+                  <strong>To Branch:</strong> {viewing.to_branch.name}
+                </p>
+              ) : (
+                <p>
+                  <strong>To Warehouse:</strong>{" "}
+                  {viewing?.to_warehouse?.name ?? "N/A"}
+                </p>
+              )}
+
               <p>
                 <strong>Expected Arrival:</strong>{" "}
                 {viewing?.expected_arrival
                   ? format(new Date(viewing.expected_arrival), "PPP")
                   : "N/A"}
               </p>
-              {viewing?.actual_arrival != null ? 
-               <p>
-                <strong>Actual Arrival:</strong>{" "}
-                {viewing?.actual_arrival
-                  ? format(new Date(viewing.actual_arrival), "PPP")
-                  : "N/A"}
-              </p> : <></>}
+
+              {viewing?.actual_arrival && (
+                <p>
+                  <strong>Actual Arrival:</strong>{" "}
+                  {format(new Date(viewing.actual_arrival), "PPP")}
+                </p>
+              )}
+
               <p>
                 <strong>Status:</strong>{" "}
                 <span className="capitalize font-medium text-green-700">
@@ -171,6 +306,7 @@ export default function ListTransfer() {
                   <div>Item</div>
                   <div className="text-right">Qty</div>
                 </div>
+
                 {(viewing?.transfer_item || []).map((item, i) => (
                   <div
                     key={i}
@@ -253,44 +389,61 @@ function TransferSection({
           {transfers.map((request) => (
             <div
               key={request.id}
-              className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-all"
+              className="border border-gray-100 rounded-xl bg-white hover:shadow-sm transition-all overflow-hidden"
             >
-              <div className="flex flex-col gap-1 text-sm text-gray-700">
-                <span className="font-semibold">
-                  {request.id.slice(0, 8)}...
-                </span>
-                <span>
-                  <strong>From:</strong> {request.from_warehouse?.name ?? "N/A"}
-                </span>
-                <span>
-                  <strong>Expected:</strong>{" "}
-                  {request.expected_arrival
-                    ? format(new Date(request.expected_arrival), "PPP")
-                    : "N/A"}
-                </span>
-                <span>
-                  <strong>Status:</strong>{" "}
-                  <span className="capitalize text-green-700 font-medium">
-                    {request.status}
-                  </span>
-                </span>
+              <div className="flex items-start justify-between px-4 py-3 bg-green-100">
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-gray-600" />
+                    <span>
+                      {request.to_branch?.name ??
+                        request.to_warehouse?.name ??
+                        "N/A"}
+                    </span>
+                  </h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Expected:{" "}
+                    {request.expected_arrival
+                      ? format(new Date(request.expected_arrival), "PPP")
+                      : "N/A"}
+                  </p>
+                </div>
+
+                <Badge className="bg-green-500/15 text-green-700 text-xs font-medium rounded-md">
+                  {request.status}
+                </Badge>
               </div>
 
-              <div className="flex gap-2 mt-3 sm:mt-0">
+              <div className="px-4 py-2 flex flex-col gap-1 text-sm text-gray-700">
+                <div className="flex items-center gap-2">
+                  <Warehouse className="w-4 h-4 text-gray-500" />
+                  <span>{request.from_warehouse?.name ?? "N/A"}</span>
+                </div>
+                <div className="text-gray-600 text-xs">
+                  Item count: {request.transfer_item?.length ?? 0}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 px-4 pb-3">
                 <Button
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs flex items-center gap-1 rounded-lg px-3 py-2"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs flex items-center gap-1 rounded-lg px-3 py-1.5"
                   onClick={() => onView(request.id)}
                 >
                   <ScanEye className="w-4 h-4" /> View
                 </Button>
+
                 {onAction && request.status === "OUT" && (
                   <Button
-                    className="bg-green-700 hover:bg-green-800 text-white text-xs flex items-center gap-1 rounded-lg px-3 py-2"
+                    className="bg-green-700 hover:bg-green-800 text-white text-xs flex items-center gap-1 rounded-lg px-3 py-1.5"
                     onClick={() => onAction(request.id)}
                   >
                     <PackageCheck className="w-4 h-4" /> Mark Received
                   </Button>
                 )}
+              </div>
+
+              <div className="px-4 pb-2 text-right text-[10px] text-gray-400 font-mono">
+                Ref: {request.id}
               </div>
             </div>
           ))}
@@ -299,3 +452,4 @@ function TransferSection({
     </div>
   )
 }
+

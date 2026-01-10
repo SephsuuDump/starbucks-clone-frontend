@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Plus, Trash2, Filter } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { ProcurementHeader } from "../procurement/Header"
+
 import { useEffect, useState } from "react"
 import { Inventory } from "@/types/Inventory"
 import { InventoryService } from "@/services/Inventory/InventoryService"
@@ -12,6 +12,8 @@ import { Page } from "@/types/page"
 import DeleteInventoryModal from "./DeleteInventoryModal"
 import AddQuantityModal from "./AddQuantity"
 import { AddInventoryModal, fetchAllInventory } from "./AddInventoryModal"
+import { ProcurementHeader } from "@/features/procurement/components/Header"
+import { useAuth } from "@/hooks/use-auth"
 
 export function categorizeInventory(inventory: Inventory[]) {
   const low: Inventory[] = []
@@ -39,6 +41,7 @@ export function categorizeInventory(inventory: Inventory[]) {
 }
 
 export function BranchInventory() {
+    const {claims, loading :authLoading} = useAuth();
     const [inventory, setInventory] = useState<Inventory[]>([])
     const [page, setPage] = useState<Page>({ page: 1, limit: 10 })
     const [totalPages, setTotalPages] = useState(0)
@@ -79,8 +82,9 @@ export function BranchInventory() {
           toast.error(`${e}`)
         }
       }
-      getInventory("7e42ef23-002b-4d39-8d12-9101bbaf2385")
-    }, [page, loading, debouncedSearch])
+      console.log(claims.branchId!)
+      getInventory(claims.branchId!)
+    }, [claims.branchId,page, loading, debouncedSearch])
 
     let filteredInventory = [...inventory]
     if (selectedStock) {
@@ -118,7 +122,7 @@ export function BranchInventory() {
         )}
         {openAddInventory && (
           <AddInventoryModal
-            id="7e42ef23-002b-4d39-8d12-9101bbaf2385"
+            id={claims.branchId!}
             open={openAddInventory}
             setOpen={setOpenAddInventory}
             currentInventory={inventory}
