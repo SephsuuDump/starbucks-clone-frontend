@@ -1,7 +1,10 @@
 "use client"
 
+import { EmptyState } from "@/components/custom/EmptyState";
+import { Pagination } from "@/components/custom/Pagination";
 import { SupplierDetailsHeader } from "@/features/procurement/components/SupplierDetailsHeader";
 import { useFetchOne } from "@/hooks/use-fetch-one";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatToPeso } from "@/lib/formatter";
 import { SupplierService } from "@/services/procurement/supplierService";
 import { useParams } from "next/navigation";
@@ -10,11 +13,21 @@ import { toast } from "sonner";
 
 export function SupplierDetailsPage() {
     const { id } = useParams();
+
     const { data: supplier, loading } = useFetchOne(
         SupplierService.getSupplierById,
         [id],
         [id]
     );
+
+    const items = supplier?.supplier_item ?? [];
+
+    const {
+        page,
+        size,
+        setPage,
+        paginated,
+    } = usePagination(items, 10)
 
     if (!supplier || loading) return <div>Loading</div>
     return(
@@ -29,7 +42,15 @@ export function SupplierDetailsPage() {
                 <div className="th">Description</div>
                 <div className="th">Unit Cost</div>
             </div>
-            {supplier.supplier_item?.map((item: any, _: number) => (
+
+            {paginated.length === 0 && (
+                <EmptyState 
+                    title={`No supplier items found.`}
+                    message="Try adjusting the search filter"
+                />
+            )}
+
+            {paginated?.map((item: any, _: number) => (
                 <div className="tdata grid grid-cols-4" key={_}>
                     <div className="td uppercase">{ item.id }</div>
                     <div className="td">{ item.name }</div>
@@ -37,6 +58,13 @@ export function SupplierDetailsPage() {
                     <div className="td">{ formatToPeso(item.unit_cost) }</div>
                 </div>
             ))}
+
+            <Pagination
+                totalItems={supplier.supplier_item.length}
+                itemsPerPage={size}
+                currentPage={page}
+                onPageChange={setPage}
+            />
         </section>
     );
 }

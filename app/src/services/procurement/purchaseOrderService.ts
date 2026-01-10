@@ -31,6 +31,13 @@ export class PurchaseOrderService {
         );
     }
 
+    static async getPurchaseOrderByWarehouse(id: string) {
+        return await requestData(
+            `${url}/get-by-warehouse?id=${id}`,
+            'GET',
+        );
+    }
+
     static async createPurchaseOrder(po: any) {
         return await requestData(
             `${url}`,

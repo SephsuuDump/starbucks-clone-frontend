@@ -1,10 +1,20 @@
+import { EmptyState } from "@/components/custom/EmptyState";
+import { Pagination } from "@/components/custom/Pagination";
 import { ProcurementBadge } from "@/components/ui/badge";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatTimestamptzToWords, formatToPeso } from "@/lib/formatter";
 import Link from "next/link";
 
 export function PurchaseOrders({ orders }: {
     orders: any[];
 }) {
+    const {
+        page,
+        size,
+        setPage,
+        paginated,
+    } = usePagination(orders, 10)
+
     return (
         <section className="flex flex-col gap-2">
             <div className="grid grid-cols-5 thead">
@@ -14,7 +24,15 @@ export function PurchaseOrders({ orders }: {
                 <div className="th">Status</div>
                 <div className="th">Request Date</div>
             </div>
-            {orders.length > 0 && orders.map((item, _) => (
+
+            {paginated.length === 0 && (
+                <EmptyState 
+                    title={`No purchase orders.`}
+                    message="Try adjusting the filters/selected status."
+                />
+            )}
+
+            {paginated.length > 0 && paginated.map((item, _) => (
                 <div 
                     key={_}
                     className="tdata grid grid-cols-5"
@@ -38,7 +56,15 @@ export function PurchaseOrders({ orders }: {
                     <div className="td">{ formatTimestamptzToWords(item.date) }</div>
                 </div>
             ))}
-            {orders.length === 0 && (<div className="col-span-5 text-center text-sm">No purchase orders as of now.</div>)}
+            
+            <div className="relative z-50">
+                <Pagination
+                    totalItems={orders.length}
+                    itemsPerPage={size}
+                    currentPage={page}
+                    onPageChange={setPage}
+                />
+            </div>
         </section>
     )
 }

@@ -5,6 +5,9 @@ import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CreateSupplierItem } from "../supplier/CreateSupplierItem";
 import { toast } from "sonner";
+import { usePagination } from "@/hooks/use-pagination";
+import { EmptyState } from "@/components/custom/EmptyState";
+import { Pagination } from "@/components/custom/Pagination";
 
 export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier }: {
     open: boolean;
@@ -31,6 +34,14 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
 
         setOpen(true);
     }
+
+    const {
+        page,
+        size,
+        setPage,
+        paginated,
+    } = usePagination(filteredSupplies, 10)
+
     return(
         <>
             <div className="flex-center-y justify-between">
@@ -54,7 +65,15 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
                 <div className="th">Unit Measurement</div>
                 <div className="th">Unit Cost</div>
             </div>
-            {filteredSupplies.map((item: any, _: number) => (
+
+            {paginated.length === 0 && (
+                <EmptyState 
+                    title={`No supplier items found.`}
+                    message="Try adjusting the search filter"
+                />
+            )}
+
+            {paginated.map((item: any, _: number) => (
                 <div className="tdata grid grid-cols-4" key={_}>
                     <div className="td uppercase">{ item.id }</div>
                     <div className="td">{ item.name }</div>
@@ -62,6 +81,13 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
                     <div className="td">{ formatToPeso(item.unit_cost) }</div>
                 </div>
             ))}
+
+            <Pagination
+                totalItems={filteredSupplies.length}
+                itemsPerPage={size}
+                currentPage={page}
+                onPageChange={setPage}
+            />
 
             {open &&
                 <CreateSupplierItem 

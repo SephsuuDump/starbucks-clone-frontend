@@ -33,7 +33,8 @@ export function SupplyOrderReceipt({ selectedItems, supplier, setTab }: {
             const po = await PurchaseOrderService.createPurchaseOrder({ 
                 supplier_id: supplier.id, 
                 total_cost: totalCost,
-                user_id: claims.id
+                user_id: claims.id,
+                warehouse_id: claims.warehouseId,
             });
             if (po) {
                 const formattedItems = selectedItems.map((item: any, _: number) => ({

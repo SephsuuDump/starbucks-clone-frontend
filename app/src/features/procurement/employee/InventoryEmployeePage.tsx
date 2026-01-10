@@ -28,12 +28,12 @@ export function InventoryEmployeePage() {
 
     useEffect(() => {
         const fetchOrders = async () => {
-        if (!user?.branch?.id || authLoading || userLoading) return;
+        if (!user?.warehouse?.id || authLoading || userLoading) return;
 
         setLoadingOrders(true);
         try {
-            const data = await PurchaseOrderService.getPurchaseOrderByBranch(
-            user.branch.id
+            const data = await PurchaseOrderService.getPurchaseOrderByWarehouse(
+            user.warehouse.id
             );
             setOrders(data);
         } catch (error) {
@@ -50,6 +50,7 @@ export function InventoryEmployeePage() {
     return (
         <section className="flex flex-col gap-2">
             <ProcurementHeader label="purchase orders" />
+            
             <div className="flex-center-y justify-between">
                 <div className="flex-center-y bg-slate-50">
                 {tabs.map((item, i) => (

@@ -23,6 +23,7 @@ import { Pagination } from "@/components/custom/Pagination";
 import { usePagination } from "@/hooks/use-pagination";
 import ViewProduct from "../components/ViewProduct";
 import { EditProductRequirement } from "../components/EditProductRequirements";
+import { ViewBranchLogs } from "./components/ViewBranchLogs";
 
 const categories = ["ALL PRODUCTS", "BAKED", "DESSERTS", "FRAPUCCINO", "FRUITS", "ICED CHOCOLATE", "ICED COFFEE", "ICED ESPRESSO", "ICED TEA", "PASTA", "REFRESHERS", "SANDWICHES"]
 
@@ -32,6 +33,7 @@ export function ProductsPage() {
     const [reload, setReload] = useState(false)
     const [filter, setFilter] = useState(categories[0])
     const [open, setOpen] = useState(false)
+    const [openLogs, setOpenLogs] = useState();
     const [toView, setView] = useState();
     const [toEdit, setEdit] = useState();
     const [toUpdate, setUpdate] = useState<any>()
@@ -43,16 +45,29 @@ export function ProductsPage() {
 
     const isManager = claims?.role === "E-COMMERCE MANAGER"
 
+    const shouldFetchAll = isManager
+    const shouldFetchBranch = !isManager && !!claims?.branchId
+
+
     const fetchProducts = useFetchData(
         ProductService.getAllProducts,
-        [reload, isManager]
-    )
+        [reload, shouldFetchAll],
+        undefined,
+        0,
+        1000,
+        { enabled: shouldFetchAll }
+    );
+
 
     const fetchBranchProducts = useFetchData(
         ProductService.getByBranch,
-        [reload, isManager],
-        [claims?.branchId]
-    )
+        [reload, claims?.branchId],
+        shouldFetchBranch ? [claims.branchId] : undefined,
+        0,
+        1000,
+        { enabled: shouldFetchBranch }
+    );
+
 
     const { data: products = [], loading } =
         isManager ? fetchProducts : fetchBranchProducts
@@ -61,7 +76,7 @@ export function ProductsPage() {
 
     const filteredProducts = useMemo(() => {
         if (filter === "ALL PRODUCTS") return filteredItems
-        return filteredItems.filter(item => item.category === filter)
+        return filteredItems.filter((item: any) => item.category === filter)
     }, [filter, filteredItems])
 
     const { page, size, setPage, paginated } =
@@ -101,6 +116,7 @@ export function ProductsPage() {
                         ))}
                     </SelectContent>
                 </Select>
+
                 {isManager && toBulk.length === 0 && (
                     <Button     
                         onClick={ () => setOpen(true) }
@@ -109,6 +125,7 @@ export function ProductsPage() {
                         Add New
                     </Button>
                 )}
+
                 {toBulk.length > 0 && (
                     <Button
                         className="!bg-green-900"
@@ -117,6 +134,7 @@ export function ProductsPage() {
                         Bulk Update
                     </Button>
                 )}
+
                 {toBulk.length > 0 && (
                     <Button
                         className="!bg-red-900"
@@ -125,6 +143,7 @@ export function ProductsPage() {
                         Bulk Delete
                     </Button>
                 )}
+                
             </div>
 
             <div className="flex items-center thead">
@@ -184,16 +203,21 @@ export function ProductsPage() {
                                 <DropdownMenuItem onClick={() => setUpdate(item)}>
                                     Update
                                 </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setBulk((prev: any) => [...prev, item.id])}
+                                >
+                                    Select
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setOpenLogs(item)}
+                                >
+                                    Logs
+                                </DropdownMenuItem>
                                 <DropdownMenuItem 
                                     className="text-red-600 focus:text-red-600"
                                     onClick={() => setDelete(item)}
                                 >
                                     Delete
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setBulk((prev: any) => [...prev, item.id])}
-                                >
-                                    Select
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -228,6 +252,13 @@ export function ProductsPage() {
                 <CreateProduct
                     setOpen={ setOpen }
                     setReload={ setReload }
+                />
+            )}
+
+            {openLogs && (
+                <ViewBranchLogs 
+                    toView={ openLogs }
+                    setView={ setOpenLogs }
                 />
             )}
 

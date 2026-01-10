@@ -12,6 +12,13 @@ export class OrderService {
         );
     }
 
+    static async getQuotations() {
+        return await requestData(
+            `${orderUrl}/get-quotations`,
+            'GET',
+        );
+    }
+
     static async getOrderById(id: number) {
         return await requestData(
             `${orderUrl}/get-by-id?id=${id}`,
@@ -48,6 +55,15 @@ export class OrderService {
             'POST',
             undefined,
             order
+        );
+    }
+
+    static async generateInvoice(payload: any) {
+        return await requestData(
+            `${orderUrl}/generate-invoice`,
+            'GET',
+            undefined,
+            payload
         );
     }
 }

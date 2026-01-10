@@ -13,19 +13,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import UpdateAccount from "../components/UpdateAccount";
 import { formatToPeso } from "@/lib/formatter";
 import { AccountCreditService } from "@/services/procurement/accountCreditService";
 import { EmptyState } from "@/components/custom/EmptyState";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 export function CustomerAccount() {
+    const { id } = useParams();
     const activeTabCss = '!bg-green-900 !text-white';
     const searchParam = useSearchParams();
-    const { claims, loading: authLoading } = useAuth();
     const [reload, setReload] = useState(false)
     
-    const userId = claims?.id || null;
+    const userId = id || null;
     const { data, loading } = useFetchOne(
         CustomerService.getCustomerById,
         [userId, reload],
@@ -38,13 +37,12 @@ export function CustomerAccount() {
     );
     const { data: credit, loading: creditsLoading } = useFetchOne(
         AccountCreditService.getAccountCreditByUser,
-        [claims.id],
-        [claims.id]
+        [id],
+        [id]
     );
 
     const [filteredOrders, setFilteredOrders] = useState<any>([]);
     const [tab, setTab] = useState('Pending');
-    const [toUpdate, setUpdate] = useState<any>();
 
     useEffect(() => {
         if (!orders) return;
@@ -58,13 +56,17 @@ export function CustomerAccount() {
         });
     }, [orders, tab]);
 
-    if (loading || authLoading || !data || ordersLoading || creditsLoading) return <div>Loading</div>
+    if (loading || !data || ordersLoading || creditsLoading) return <div>Loading</div>
     return (
         <section className="flex flex-col gap-2 p-4">
             {/* HEADER */}
             <div className="flex-center-y gap-8">
-                <Link href={'/'}><ArrowLeft className="w-6 h-6" strokeWidth={3} /></Link>
-                <ProcurementHeader label="My Profile" />
+                <ArrowLeft 
+                    onClick={ () => { history.back() } }
+                    className="w-6 h-6 cursor-pointer" 
+                    strokeWidth={3} 
+                />
+                <ProcurementHeader label={`${data.first_name} ${data.last_name}`} />
                 <div className="ms-auto flex-center-y gap-16 shadow-xs px-4 py-2 rounded-xl bg-slate-50">
                     <div className="font-extrabold text-[16px]">ACCOUNT CREDIT:</div>
                     <div className="flex-center gap-2">
@@ -103,15 +105,8 @@ export function CustomerAccount() {
                     <div className="flex items-center justify-between">
                         <div>
                             <img src='/svg/logo2.svg' className="w-30 h-30"/>
-                            <div className="text-xl font-extrabold text-green-950 -mt-10">MY STARBUCKS PROFILE</div>
+                            <div className="text-xl font-extrabold text-green-950 -mt-10">CUSTOMER PROFILE</div>
                         </div>
-                        <Button
-                            onClick={ () => setUpdate(data) }
-                            className="bg-green-900! font-extrabold mt-4 h-8 hover:opacity-90"
-                            size="sm"
-                        >
-                            EDIT
-                        </Button>
                     </div>
                     <div className="text-lg font-bold text-gray-600 mt-4">E-MAIL ADDRESS</div>
                     <div className="text-lg font-bold tracking-wider">{ data.email }</div>
@@ -259,14 +254,6 @@ export function CustomerAccount() {
                     ))}
                 </Accordion>
             </div>
-            
-            {toUpdate && (
-                <UpdateAccount
-                    toUpdate={ toUpdate }
-                    setUpdate={ setUpdate }
-                    setReload={ setReload }
-                />
-            )}
         </section>
     )
 }

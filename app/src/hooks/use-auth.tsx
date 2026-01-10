@@ -13,6 +13,7 @@ const claimsInit = {
     id: '',
     email: '',
     branchId: '',
+    warehouseId: '',
     role: '',
     iat: 0, 
     exp: 0, 

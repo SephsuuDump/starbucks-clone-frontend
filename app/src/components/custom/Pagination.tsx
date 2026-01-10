@@ -23,7 +23,7 @@ export function Pagination({
     return (
         <div className="flex justify-between items-center mt-4">
             <div className="text-sm text-muted-foreground">
-                Showing {startItem}–{endItem} of {totalItems}
+                Showing {startItem - 1}–{endItem} of {totalItems}
             </div>
 
             <div className="flex gap-1">

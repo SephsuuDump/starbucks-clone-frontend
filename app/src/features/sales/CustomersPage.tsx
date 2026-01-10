@@ -24,6 +24,7 @@ import {
 import { EmptyState } from "@/components/custom/EmptyState"
 import { CustomerService } from "@/services/ecommerce/customerService"
 import { formatToPeso } from "@/lib/formatter"
+import Link from "next/link"
 
 export function CustomersPage() {
     const { data: customers = [], loading } = useFetchData(
@@ -137,14 +138,17 @@ export function CustomersPage() {
             {paginated.map((c: any) => (
                 <div key={c.id} className="flex items-center tdata">
                     <div className="grid grid-cols-6 w-full">
-                        <div className="td flex-col !items-start">
+                        <Link 
+                            href={`/sales/customers/${c.id}`}
+                            className="td flex-col !items-start hover:underline cursor-pointer"
+                        >
                             <div className="font-semibold">
                                 {c.last_name || "—"}, {c.first_name || ""}
                             </div>
                             <div className="text-xs text-muted-foreground">
                                 {c.role}
                             </div>
-                        </div>
+                        </Link>
 
                         <div className="td text-xs">
                             {c.email}
