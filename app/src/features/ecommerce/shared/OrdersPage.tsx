@@ -21,6 +21,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/custom/Pagination";
 
 const tabs = ['Pending', 'Completed'];
 
@@ -34,6 +36,13 @@ export function OrdersPage() {
     const fetchBranchOrders = useFetchData(OrderService.getByBranch, [reload, claims.branchId], [claims.branchId]);
 
     const { data: orders = [] } = isManager ? fetchOrders : fetchBranchOrders;
+
+    const {
+        page,
+        size,
+        setPage,
+        paginated,
+    } = usePagination(orders.filter((order: any) => order.status.toUpperCase() === tab.toUpperCase()), 10)
 
     async function handleSubmit(order: any) {
         try {
@@ -69,9 +78,9 @@ export function OrdersPage() {
             </div>
 
             <Accordion type="multiple" className="">
-                {orders
-                    .filter((order) => order.status.toUpperCase() === tab.toUpperCase())
-                    .map((order) => (
+                {paginated
+                    .filter((order: any) => order.status.toUpperCase() === tab.toUpperCase())
+                    .map((order: any) => (
                         <AccordionItem
                             key={order.id}
                             value={order.id}
@@ -221,6 +230,13 @@ export function OrdersPage() {
                         </AccordionItem>
                     ))}
             </Accordion>
+
+            <Pagination
+                totalItems={orders.filter((order: any) => order.status.toUpperCase() === tab.toUpperCase()).length}
+                itemsPerPage={size}
+                currentPage={page}
+                onPageChange={setPage}
+            />
         </section>
     );
 }

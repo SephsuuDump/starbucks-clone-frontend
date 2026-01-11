@@ -17,6 +17,15 @@ export class SupplierService {
         );
     }
 
+    static async rateSupplier(rating: any) {
+        return await requestData(
+            `${url}/rate-supplier`,
+            'POST',
+            undefined,
+            rating
+        );
+    }
+
     static async updateSupplier(supplier: any, id: string) {
         return await requestData(
             `${url}/update?id=${id}`,
@@ -28,10 +37,10 @@ export class SupplierService {
 
     static async updateActiveState(is_active:boolean, id: string) {
         return await requestData(
-            `${url}/active?id=${id}`,
+            `${url}/active`,
             'PUT',
             undefined,
-            { is_active: is_active }
+            { is_active: is_active, id: id }
         );
     }
 

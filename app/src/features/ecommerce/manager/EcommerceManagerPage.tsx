@@ -27,7 +27,7 @@ export function EcommerceManagerPage() {
     const router = useRouter();
     const { data: summary, loading } = useFetchOne(SalesSummaryService.getSalesSummary);
 
-    if (loading) return <div>Loading</div>
+    if (loading || !summary) return <div>Loading</div>
 
     const summaryCards = [
         { icon: PhilippinePeso, count: formatToPeso(summary.totalSales), title: "Total Sales", href: '' },

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ProcurementHeader } from "../../components/Header";
 import { useAuth } from "@/hooks/use-auth";
+import { SupplierService } from "@/services/procurement/supplierService";
 
 export function SupplyOrderReceipt({ selectedItems, supplier, setTab }: {
     selectedItems: any;
@@ -25,7 +26,12 @@ export function SupplyOrderReceipt({ selectedItems, supplier, setTab }: {
     const totalCost = selectedItems.reduce((sum: number, item: any) => {
         return sum + (item.quantity * item.unit_cost);
     }, 0);
-    console.log({ supplier_id: supplier.id, total_cost: totalCost });
+    
+    const [rating, setRating] = useState({
+        supplier_id: supplier.id,
+        user_id: claims.id,
+        rating: 0
+    })
     
 
     async function handlePurchase() {
@@ -47,6 +53,18 @@ export function SupplyOrderReceipt({ selectedItems, supplier, setTab }: {
                 setOpen(true);
             }
         } catch (error) { toast.error(`${error}`) }
+    }
+
+    async function handleRateSupplier() {
+        try {
+            const data = await SupplierService.rateSupplier(rating);
+
+            if (data) {
+                toast.success(`Supplier rated ${rating.rating} star.`)
+            }
+        } catch (error) {
+            toast.error(String(error))
+        }
     }
 
     if (authLoading) return <div>Loading</div>
@@ -108,26 +126,52 @@ export function SupplyOrderReceipt({ selectedItems, supplier, setTab }: {
                 </div>
             </div>
 
-            <AlertDialog open={ open }>
+            <AlertDialog open={open}>
                 <AlertDialogContent className="flex-center flex-col w-fit">
-                    <AlertDialogTitle className="font-extrabold text-green-900 text-lg">PURCHASE ORDER SUCCESS</AlertDialogTitle>
-                    <CircleCheckBig className="w-25 h-25 text-green-900" strokeWidth={2.5}/>
-                    <div className="text-[16px] font-extrabold">YOU CAN RATE <span className="text-orange-900">{ supplier.name }</span></div>
-                    <div className="flex -mt-2 gap-2">
-                        <Star className="w-6 h-6 text-orange-900" />
-                        <Star className="w-6 h-6 text-orange-900" />
-                        <Star className="w-6 h-6 text-orange-900" />
-                        <Star className="w-6 h-6 text-orange-900" />
-                        <Star className="w-6 h-6 text-orange-900" />
+                    <AlertDialogTitle className="font-extrabold text-green-900 text-lg">
+                        PURCHASE ORDER SUCCESS
+                    </AlertDialogTitle>
+
+                    <CircleCheckBig
+                        className="w-25 h-25 text-green-900"
+                        strokeWidth={2.5}
+                    />
+
+                    <div className="text-[16px] font-extrabold">
+                        YOU CAN RATE <span className="text-orange-900">{supplier.name}</span>
                     </div>
-                    <Button 
-                        onClick={ () => { window.location.href = '/procurement' } }
+
+                    <div className="flex -mt-2 gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                                key={star}
+                                onClick={() =>
+                                    setRating((prev) => ({
+                                        ...prev,
+                                        rating: star,
+                                    }))
+                                }
+                                className={`w-6 h-6 cursor-pointer transition
+                                    ${rating.rating >= star
+                                        ? "text-orange-900 fill-orange-900"
+                                        : "text-gray-300"
+                                    }`}
+                            />
+                        ))}
+                    </div>
+
+                    <Button
+                        onClick={() => {
+                            handleRateSupplier();
+                            window.location.href = "/procurement";
+                        }}
                         className="!bg-green-900 hover:opacity-90 font-semibold"
                     >
                         BACK TO ORDERS
                     </Button>
                 </AlertDialogContent>
             </AlertDialog>
+
         </section>
     );
 }

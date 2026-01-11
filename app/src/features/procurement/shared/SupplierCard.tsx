@@ -27,7 +27,7 @@ export function SupplierCard({ role, supplier }: {
         try {
             const data = await SupplierService.updateActiveState(active, id)
 
-            if (data) {
+            if (!data) {
                 toast.error("Failed to verify supplier.");
                 return;
             }
@@ -67,7 +67,7 @@ export function SupplierCard({ role, supplier }: {
                 </div>
 
                 <div className="flex-center-y gap-2">
-                    {role.includes("MANAGER") && (
+                    {role.includes("MANAGER") && !supplier.is_active && (
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button
@@ -99,14 +99,22 @@ export function SupplierCard({ role, supplier }: {
                         </AlertDialog>
                     )}
 
-                    {supplier.is_active && (
+                    {supplier.is_active && role.includes("EMPLOYEE") && (
                         <Link
-                            href={role.includes("EMPLOYEE") ? `/procurement/purchase-order/${supplier.id}` : `/procurement/suppliers/${supplier.id}`}
+                            href={`/procurement/purchase-order/${supplier.id}`}
                             className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
                         >
-                            {role.includes("EMPLOYEE") ? "ORDER" : "VIEW"}
+                            ORDER
                         </Link>
                     )}
+
+                    <Link
+                        href={`/procurement/suppliers/${supplier.id}`}
+                        className="text-xs rounded-full bg-green-900 text-white px-3 py-1"
+                    >
+                        VIEW
+                    </Link>
+
                 </div>
                 
             </div>

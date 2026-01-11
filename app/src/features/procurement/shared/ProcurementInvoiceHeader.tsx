@@ -11,6 +11,8 @@ import { ProcurementHeader } from "../components/Header";
 import { toast } from "sonner";
 import { PurchaseOrderService } from "@/services/procurement/purchaseOrderService";
 import { getMaxListeners } from "events";
+import { error } from "console";
+import { PurchaseOrderItemService } from "@/services/procurement/purchaseOrderItemService";
 
 export function ProcurementInvoiceHeader({ order, setReload, role }: {
     order: any;
@@ -37,6 +39,18 @@ export function ProcurementInvoiceHeader({ order, setReload, role }: {
         } catch (error) { toast.error(`${error}`) }
         finally {
             setReload(prev => !prev);
+        }
+    }
+
+    async function handleReceiveOrder() {
+        try {
+            const data = await PurchaseOrderItemService.receiveOrder(order.warehouse.id, order.supplies);
+
+            if (data) {
+                toast.success('Order received to warehouse.')
+            }
+        } catch (error) {
+            toast.error(String(error))
         }
     }
 
@@ -167,7 +181,7 @@ export function ProcurementInvoiceHeader({ order, setReload, role }: {
                             CANCEL
                         </Button>
                         <Button
-                            onClick={updateStatus}
+                            onClick={ updateStatus }
                             className="!bg-green-900 font-bold hover:opacity-90"
                             size="sm"
                             disabled={onProcess}
@@ -194,7 +208,10 @@ export function ProcurementInvoiceHeader({ order, setReload, role }: {
                             CANCEL
                         </Button>
                         <Button 
-                            onClick={ updateStatus }
+                            onClick={(e) => {
+                                e.preventDefault(); 
+                                handleReceiveOrder();
+                            }}
                             className="!bg-green-900 font-bold hover:opacity-90"
                             size="sm"
                             disabled={ onProcess }

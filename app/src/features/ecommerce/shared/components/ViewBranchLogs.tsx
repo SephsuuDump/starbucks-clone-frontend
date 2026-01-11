@@ -11,14 +11,14 @@ export function ViewBranchLogs({ toView, setView }: any) {
     )
     return (
         <Dialog open onOpenChange={ (open) => { if (!open) setView(undefined) } }>
-            <DialogContent>
+            <DialogContent className="max-h-10/11 overflow-y-auto">
                 <ModalTitle text={`Logs for ${toView.name}`} />
                 <div className="thead grid grid-cols-3">
                     <div className="th">Flow</div>
                     <div className="th">Quantity</div>
                     <div className="th">Date</div>
                 </div>
-                {logs.map((item, i) => (
+                {logs.map((item: any, i: number) => (
                     <div className="tdata grid grid-cols-3" key={i}>
                         <div className="td">{ item.flow }</div>
                         <div className="td">{ item.quantity }</div>

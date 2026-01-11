@@ -11,4 +11,13 @@ export class PurchaseOrderItemService {
             poi
         );
     }
+
+    static async receiveOrder(id: string, poi: any) {
+        return await requestData(
+            `${url}/receive-order?warehouse_id=${id}`,
+            'POST',
+            undefined,
+            poi
+        );
+    }
 }
