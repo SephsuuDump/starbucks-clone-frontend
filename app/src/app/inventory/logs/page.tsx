@@ -44,7 +44,7 @@ export default function BranchInventoryLogs() {
   const { claims, loading: authLoading } = useAuth()
 
   const [logs, setLogs] = useState<InventoryLog[]>([])
-  const [page, setPage] = useState<Page>({ page: 1, limit: 50 })
+  const [page, setPage] = useState<Page>({ page: 1, limit: 10 })
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
 
@@ -69,6 +69,8 @@ export default function BranchInventoryLogs() {
           branchId,
           warehouseId
         )
+        console.log(claims.warehouseId)
+        console.log(data)
         setLogs(data.data)
         setTotalPages(data.totalPages)
       } catch (e) {
@@ -84,9 +86,10 @@ export default function BranchInventoryLogs() {
   const groupedLogs = groupLogs(logs)
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 flex flex-col gap-6">
-      <ProcurementHeader label="Branch Inventory Logs" />
-
+    <div className="w-full min-h-screen bg-slate p-8 flex flex-col gap-6">
+      {claims.branchId ? <ProcurementHeader label="Branch Inventory Logs" />
+      : <ProcurementHeader label="Warehouse Inventory Logs" />}
+     
       <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
         {loading ? (
           <div className="flex justify-center items-center text-gray-500 py-8 text-sm">

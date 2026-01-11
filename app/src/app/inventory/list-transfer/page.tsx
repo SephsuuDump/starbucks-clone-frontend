@@ -170,7 +170,7 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 flex flex-col gap-8">
+    <div className="w-full min-h-screen bg-slate p-8 flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <ProcurementHeader label="My Orders" />
 
