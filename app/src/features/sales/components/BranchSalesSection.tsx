@@ -10,9 +10,10 @@ import { useSearchFilter } from "@/hooks/use-search-filter"
 import { formatDateTime, formatToPeso } from "@/lib/formatter"
 import { OrderService } from "@/services/ecommerce/orderService"
 import { SalesReportService } from "@/services/sales/reportService"
-import { EllipsisVertical } from "lucide-react"
+import { EllipsisVertical, File } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 
 const branches = [
     { id: "032e6326-d605-4e4d-a0de-8c5f62f70774", name: "STARBUCKS HIRAYA" },
@@ -28,7 +29,6 @@ export function BranchSalesSection() {
     //     [selectedBranch],
     //     [selectedBranch]
     // )
-
 
     return (
         <section className="w-full flex flex-col gap-2">
@@ -93,13 +93,48 @@ function SalesOrders({ branchId }: any) {
         paginated,
     } = usePagination(filteredItems, 10)
 
+    async function exportPdfFile() {
+        try {
+            const response = await fetch(
+                "http://localhost:4000/api/sales-report/export-sales-orders-report",
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/pdf",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orders), // ✅ FIXED
+                }
+            );
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Failed to generate PDF");
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `top-products.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error: any) {
+            toast.error(error.message ?? "PDF export failed");
+        }
+    }
+
     if (loading) return <div>Loading</div>
 
     return (
         <section className="w-full flex flex-col gap-2">
 
-            <div className="flex flex-wrap items-center gap-2">
-                <div className="w-full sm:w-auto flex-1">
+            <div className="flex-center-y justify-between">
+                <div className="w-full sm:w-auto">
                     <Input
                         type="text"
                         placeholder="Search orders..."
@@ -107,6 +142,12 @@ function SalesOrders({ branchId }: any) {
                         onChange={e => setSearch(e.target.value)}
                     />
                 </div>
+                <Button 
+                    onClick={exportPdfFile}
+                    className="!bg-green-900 font-extrabold hover:opacity-90"
+                >
+                    <File /> EXPORT FILE
+                </Button>
             </div>
 
             <div className="flex items-center thead">
@@ -202,10 +243,51 @@ function ProductSales({ branchId }: any) {
         paginated,
     } = usePagination(productSales, 10)
 
+    async function exportPdfFile() {
+        try {
+            const response = await fetch(
+                "http://localhost:4000/api/sales-report/export-top-products-period-report",
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/pdf",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(productSales), // ✅ FIXED
+                }
+            );
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Failed to generate PDF");
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `top-products.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error: any) {
+            toast.error(error.message ?? "PDF export failed");
+        }
+    }
+
     if (loading) return <div>Loading</div>
 
     return (
         <section className="w-full flex flex-col gap-2">
+            <Button 
+                onClick={exportPdfFile}
+                className="!bg-green-900 font-extrabold hover:opacity-90 ms-auto"
+            >
+                <File /> EXPORT FILE
+            </Button>
             <div className="flex items-center thead">
                 <div className="flex-center w-20 th">#</div>
                 <div className="grid grid-cols-3 w-full">

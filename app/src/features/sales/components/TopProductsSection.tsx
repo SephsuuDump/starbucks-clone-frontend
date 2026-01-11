@@ -9,7 +9,7 @@ import { Pagination } from "@/components/custom/Pagination"
 import { EmptyState } from "@/components/custom/EmptyState"
 import { SalesReportService } from "@/services/sales/reportService"
 import { formatToPeso } from "@/lib/formatter"
-import { EllipsisVertical } from "lucide-react"
+import { EllipsisVertical, File } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,6 +17,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Fragment, useMemo } from "react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 
 export default function TopProductsSection() {
     const { data: topProducts = [], loading } =
@@ -31,13 +33,54 @@ export default function TopProductsSection() {
         paginated,
     } = usePagination(filteredItems, 10)
 
+    async function exportPdfFile() {
+        try {
+            const response = await fetch(
+                "http://localhost:4000/api/sales-report/export-top-products-report",
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/pdf",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(topProducts), // ✅ FIXED
+                }
+            );
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Failed to generate PDF");
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `top-products.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error: any) {
+            toast.error(error.message ?? "PDF export failed");
+        }
+    }
+
     if (loading) return <div>Loading</div>
 
     return (
         <section className="w-full flex flex-col gap-2 my-4">
 
-            <div className="flex-center-y gap-4">
+            <div className="flex-center-y justify-between">
                 <div className="text-orange-900 font-extrabold text-xl">PRODUCT SALES RANKING</div>
+                <Button 
+                    onClick={exportPdfFile}
+                    className="!bg-green-900 font-extrabold hover:opacity-90"
+                >
+                    <File /> EXPORT FILE
+                </Button>
             </div>
 
             {/* <div className="flex flex-wrap items-center gap-2">

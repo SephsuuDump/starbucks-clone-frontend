@@ -2,7 +2,7 @@
 
 import { useFetchOne } from "@/hooks/use-fetch-one"
 import { OrderService } from "@/services/ecommerce/orderService"
-import { useParams } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { ProcurementHeader } from "../procurement/components/Header";
 import { ArrowLeft, File } from "lucide-react";
 import { formatDateTime, formatToPeso } from "@/lib/formatter";
@@ -14,6 +14,7 @@ import { error } from "console";
 
 export function ViewOrderPage() {
     const { id } = useParams();
+    const pathname = usePathname();
 
     const { data: order, loading } = useFetchOne(
         OrderService.getOrderById,

@@ -31,6 +31,8 @@ export function OrdersPage() {
     const [tab, setTab] = useState(tabs[0]);
     const [reload, setReload] = useState(false);
     const isManager = claims.role === 'E-COMMERCE MANAGER';
+    const [processingOrderId, setProcessingOrderId] = useState<string | null>(null)
+    const [openDialogId, setOpenDialogId] = useState<string | null>(null)
 
     const fetchOrders = useFetchData(OrderService.getAllOrders, [reload]);
     const fetchBranchOrders = useFetchData(OrderService.getByBranch, [reload, claims.branchId], [claims.branchId]);
@@ -45,21 +47,32 @@ export function OrdersPage() {
     } = usePagination(orders.filter((order: any) => order.status.toUpperCase() === tab.toUpperCase()), 10)
 
     async function handleSubmit(order: any) {
+        if (processingOrderId) return
+
         try {
+            setProcessingOrderId(order.id)
+
             const data = await OrderService.processOrder({
                 branchId: order.branch.id,
                 id: order.id,
                 order_items: order.order_items
-            });
+            })
 
             if (data) {
-                toast.success("Order completed successfully.");
-                setReload(!reload);
+                toast.success("Order completed successfully.")
+                setReload(prev => !prev)
+
+                // ✅ CLOSE dialog ONLY after success
+                setOpenDialogId(null)
             }
         } catch (error) {
-            toast.error(`${error}`);
+            toast.error(`${error}`)
+        } finally {
+            setProcessingOrderId(null)
         }
     }
+
+
 
     return (
         <section className="space-y-2">
@@ -161,15 +174,20 @@ export function OrdersPage() {
                                             </div>
                                             { order.status === 'PENDING' && (
                                                 <div>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button
-                                                                size="sm"
-                                                                className="!bg-green-900 hover:opacity-90"
-                                                            >
-                                                                Complete Order
-                                                            </Button>
-                                                        </AlertDialogTrigger>
+                                                    <AlertDialog
+                                                        open={openDialogId === order.id}
+                                                        onOpenChange={(open) =>
+                                                            setOpenDialogId(open ? order.id : null)
+                                                        }
+                                                    >
+                                                        <Button
+                                                            size="sm"
+                                                            className="!bg-green-900 hover:opacity-90"
+                                                            onClick={() => setOpenDialogId(order.id)}
+                                                        >
+                                                            Complete Order
+                                                        </Button>
+
 
                                                         <AlertDialogContent>
                                                             <AlertDialogHeader>
@@ -180,14 +198,25 @@ export function OrdersPage() {
                                                             </AlertDialogHeader>
 
                                                             <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction
-                                                                    onClick={() => handleSubmit(order)}
-                                                                    className="!bg-green-900 hover:opacity-90"
+                                                                <Button
+                                                                    variant="outline"
+                                                                    disabled={processingOrderId === order.id}
+                                                                    onClick={() => setOpenDialogId(null)}
                                                                 >
-                                                                    Yes, Complete Order
-                                                                </AlertDialogAction>
+                                                                    Cancel
+                                                                </Button>
+
+                                                                <Button
+                                                                    onClick={() => handleSubmit(order)}
+                                                                    disabled={processingOrderId === order.id}
+                                                                    className="!bg-green-900 hover:opacity-90 disabled:opacity-60"
+                                                                >
+                                                                    {processingOrderId === order.id
+                                                                        ? "Processing..."
+                                                                        : "Yes, Complete Order"}
+                                                                </Button>
                                                             </AlertDialogFooter>
+
                                                         </AlertDialogContent>
                                                     </AlertDialog>
                                                 </div>

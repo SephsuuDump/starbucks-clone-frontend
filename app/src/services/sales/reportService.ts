@@ -39,5 +39,13 @@ export class SalesReportService {
         );
     }
 
+    static async exportProductSalesReport(payload: any) {
+        return await requestData(
+            `${url}/export-product-sales-report`,
+            'GET',
+            undefined,
+            payload
+        );
+    }
     
 }

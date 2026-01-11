@@ -65,6 +65,32 @@ export function CustomersPage() {
         paginated,
     } = usePagination(filteredCustomers, 10)
 
+    const getCustomerBadge = (totalSpent: number) => {
+        if (totalSpent >= 50000) {
+            return {
+                label: "VIP",
+                className: "bg-purple-100 text-purple-700 border border-purple-300"
+            }
+        }
+
+        if (totalSpent >= 10000) {
+            return {
+                label: "Silver VIP",
+                className: "bg-slate-100 text-slate-700 border border-slate-300"
+            }
+        }
+
+        if (totalSpent >= 5000) {
+            return {
+                label: "Exclusive Member",
+                className: "bg-amber-100 text-amber-700 border border-amber-300"
+            }
+        }
+
+        return null
+    }
+
+
     if (loading) return <div>Loading</div>
 
     return (
@@ -137,14 +163,30 @@ export function CustomersPage() {
 
             {paginated.map((c: any) => (
                 <div key={c.id} className="flex items-center tdata">
-                    <div className="grid grid-cols-6 w-full">
+                    <div className={`grid grid-cols-6 w-full`}>
                         <Link 
                             href={`/sales/customers/${c.id}`}
                             className="td flex-col !items-start hover:underline cursor-pointer"
                         >
-                            <div className="font-semibold">
-                                {c.last_name || "—"}, {c.first_name || ""}
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">
+                                    {c.last_name || "—"}, {c.first_name || ""}
+                                </span>
+
+                                {(() => {
+                                    const badge = getCustomerBadge(c.total_spent ?? 0)
+                                    if (!badge) return null
+
+                                    return (
+                                        <span
+                                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${badge.className}`}
+                                        >
+                                            {badge.label}
+                                        </span>
+                                    )
+                                })()}
                             </div>
+
                             <div className="text-xs text-muted-foreground">
                                 {c.role}
                             </div>

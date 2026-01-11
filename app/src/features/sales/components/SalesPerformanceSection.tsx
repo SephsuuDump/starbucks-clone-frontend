@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/custom/EmptyState"
 import { Pagination } from "@/components/custom/Pagination"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
     Select,
@@ -13,6 +14,7 @@ import { usePagination } from "@/hooks/use-pagination"
 import { useSearchFilter } from "@/hooks/use-search-filter"
 import { formatToPeso } from "@/lib/formatter"
 import { SalesReportService } from "@/services/sales/reportService"
+import { File } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import {
     CartesianGrid,
@@ -23,6 +25,7 @@ import {
     XAxis,
     YAxis
 } from "recharts"
+import { toast } from "sonner"
 
 export function SalesPerformanceSection() {
     const { data: previousSales, loading: previousSalesLoading } =
@@ -79,6 +82,40 @@ export function SalesPerformanceSection() {
         setPage(1)
     }, [selectedMonth])
 
+    async function exportProductSalesReport() {
+        try {
+            const response = await fetch(
+                "http://localhost:4000/api/sales-report/export-product-sales-report",
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/pdf",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(selectedSales), // ✅ FIXED
+                }
+            );
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Failed to generate PDF");
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `product-sales-report-${selectedSales[0]?.month_label ?? "all"}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error: any) {
+            toast.error(error.message ?? "PDF export failed");
+        }
+    }
 
     if (previousSalesLoading || productSalesLoading) {
         return <div>Loading</div>
@@ -117,11 +154,19 @@ export function SalesPerformanceSection() {
                 </div>
             </div>
 
-            <div className="text-xl font-extrabold text-orange-900">
-                PRODUCT MONTHLY SALES 
-                <span className="ml-2 text-green-900 text-[16px]">
-                    ({selectedSales[0]?.month_label ?? "—"})
-                </span>
+            <div className="flex-center-y justify-between">
+                <div className="text-xl font-extrabold text-orange-900">
+                    PRODUCT MONTHLY SALES 
+                    <span className="ml-2 text-green-900 text-[16px]">
+                        ({selectedSales[0]?.month_label ?? "—"})
+                    </span>
+                </div>
+                <Button 
+                    onClick={exportProductSalesReport}
+                    className="!bg-green-900 font-extrabold hover:opacity-90"
+                >
+                    <File /> EXPORT FILE
+                </Button>
             </div>
 
             <div className="flex gap-2">
