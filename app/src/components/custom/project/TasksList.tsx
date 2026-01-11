@@ -5,22 +5,24 @@ import { PlusCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function TaskList({
-  tasks,
-  allocations,
+  tasks = [],
+  allocations = [],
   openAllocationModal,
   onAddTask,
+  hideActions = false,
 }: {
-  tasks: any[];
-  allocations: any[];
+  tasks?: any[];
+  allocations?: any[];
   openAllocationModal: (task: any) => void;
   onAddTask?: () => void;
+  hideActions?: boolean;
 }) {
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow border border-neutral-200 dark:border-neutral-700">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Tasks</h2>
 
-        {onAddTask && (
+        {!hideActions && onAddTask && (
           <Button
             className="flex items-center gap-2 bg-blue-600 text-white"
             onClick={onAddTask}
@@ -40,14 +42,17 @@ export default function TaskList({
               <th className="py-2">Expected End</th>
               <th className="py-2">Allocations</th>
               <th className="py-2">Status</th>
-              <th className="py-2"></th>
+              {!hideActions && <th className="py-2"></th>}
             </tr>
           </thead>
 
           <tbody>
             {tasks.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center py-6 text-neutral-500">
+                <td
+                  colSpan={hideActions ? 5 : 6}
+                  className="text-center py-6 text-neutral-500"
+                >
                   No tasks available.
                 </td>
               </tr>
@@ -58,8 +63,13 @@ export default function TaskList({
                 ? `${task.employee.user.first_name} ${task.employee.user.last_name}`
                 : "Unassigned";
 
-              const taskAlloc = allocations.filter((a) => a.task_id === task.id);
-              const approvedCount = taskAlloc.filter((a) => a.is_approved).length;
+              const taskAlloc = allocations.filter(
+                (a) => a.task_id === task.id
+              );
+
+              const approvedCount = taskAlloc.filter(
+                (a) => a.is_approved
+              ).length;
 
               let allocStatus = "No Allocation";
               if (taskAlloc.length > 0) {
@@ -85,17 +95,19 @@ export default function TaskList({
                     <Badge variant="outline">{task.status}</Badge>
                   </td>
 
-                  <td className="py-3">
-                    <button
-                      onClick={() => openAllocationModal(task)}
-                      className="flex items-center text-blue-600 hover:text-blue-800 
-                                 dark:text-blue-400 dark:hover:text-blue-300 
-                                 text-sm font-medium gap-1"
-                    >
-                      <PlusCircle className="w-4 h-4" />
-                      Allocate
-                    </button>
-                  </td>
+                  {!hideActions && (
+                    <td className="py-3">
+                      <button
+                        onClick={() => openAllocationModal(task)}
+                        className="flex items-center text-blue-600 hover:text-blue-800 
+                                   dark:text-blue-400 dark:hover:text-blue-300 
+                                   text-sm font-medium gap-1"
+                      >
+                        <PlusCircle className="w-4 h-4" />
+                        Allocate
+                      </button>
+                    </td>
+                  )}
                 </tr>
               );
             })}

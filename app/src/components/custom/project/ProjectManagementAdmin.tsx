@@ -100,7 +100,7 @@ export default function ProjectManagementAdmin() {
             </p>
           </div>
 
-          <Button className="bg-blue-600 text-white" onClick={() => setOpenAdd(true)}>
+          <Button className="bg-blue-600 hover:bg-blue-500 text-white" onClick={() => setOpenAdd(true)}>
             + Add Project
           </Button>
         </div>
