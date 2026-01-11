@@ -278,28 +278,76 @@ export default function ListTransfer() {
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <DialogContent className="max-w-lg rounded-2xl shadow-xl">
           <DialogTitle>
-            <ProcurementHeader label="Transfer Receipt" />
+            <ProcurementHeader label="Transfer Details" />
           </DialogTitle>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-gray-200">
-            <table className="w-full text-sm text-gray-700">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-2 font-medium">Item Name</th>
-                  <th className="text-right px-4 py-2 font-medium">Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="mt-4 text-sm text-gray-700 space-y-4">
+            {/* Transfer Meta */}
+            <div className="border-b pb-3 space-y-1">
+              <p>
+                <strong>From Warehouse:</strong>{" "}
+                {viewing?.from_warehouse?.name ?? "N/A"}
+              </p>
+
+              {viewing?.to_branch ? (
+                <p>
+                  <strong>To Branch:</strong> {viewing.to_branch.name}
+                </p>
+              ) : (
+                <p>
+                  <strong>To Warehouse:</strong>{" "}
+                  {viewing?.to_warehouse?.name ?? "N/A"}
+                </p>
+              )}
+
+              <p>
+                <strong>Expected Arrival:</strong>{" "}
+                {viewing?.expected_arrival
+                  ? format(new Date(viewing.expected_arrival), "PPP")
+                  : "N/A"}
+              </p>
+
+              {viewing?.actual_arrival && (
+                <p>
+                  <strong>Actual Arrival:</strong>{" "}
+                  {format(new Date(viewing.actual_arrival), "PPP")}
+                </p>
+              )}
+
+              <p>
+                <strong>Status:</strong>{" "}
+                <span className="font-semibold text-green-700">
+                  {viewing?.status}
+                </span>
+              </p>
+            </div>
+
+            {/* Requested Items */}
+            <div>
+              <h3 className="font-semibold mb-2">Requested Items</h3>
+
+              <div className="border rounded-xl overflow-hidden text-xs">
+                <div className="grid grid-cols-3 bg-gray-100 px-3 py-2 font-semibold text-gray-700">
+                  <div>SKUID</div>
+                  <div>Item</div>
+                  <div className="text-right">Qty</div>
+                </div>
+
                 {(viewing?.transfer_item || []).map((item, i) => (
-                  <tr key={i} className="border-b last:border-b-0 border-gray-200">
-                    <td className="px-4 py-2">{item.inventory_item?.name}</td>
-                    <td className="px-4 py-2 text-right">{item.quantity}</td>
-                  </tr>
+                  <div
+                    key={i}
+                    className="grid grid-cols-3 px-3 py-2 border-t text-gray-700"
+                  >
+                    <div>{item?.inventory_item?.skuid ?? "N/A"}</div>
+                    <div>{item?.inventory_item?.name ?? "Unknown"}</div>
+                    <div className="text-right">{item?.quantity ?? 0}</div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
 
+          {/* Footer */}
           <div className="flex justify-end mt-6">
             <Button
               variant="outline"
@@ -311,6 +359,7 @@ export default function ListTransfer() {
           </div>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }
