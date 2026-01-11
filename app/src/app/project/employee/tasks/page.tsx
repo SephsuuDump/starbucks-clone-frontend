@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { TaskService } from "@/services/project_management/TaskService";
 import { ProjectService } from "@/services/project_management/projectService";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
 
-const EMPLOYEE_ID = "59c9df25-7eb4-4777-b51b-3ad7c52c99e1";
 
 type Task = {
   id: string;
@@ -23,16 +23,21 @@ type Task = {
 type Tab = "PENDING" | "ACTIVE" | "DONE";
 
 export default function EmployeeTaskDashboard() {
+  const { claims, loading: authLoading } = useAuth();
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projectNames, setProjectNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("PENDING");
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
+    if (!claims?.id) return;
+
     try {
       setLoading(true);
-      const taskRes = await TaskService.getByEmployee(EMPLOYEE_ID);
+
+      const taskRes = await TaskService.getByEmployee(claims.id);
       const list: Task[] = taskRes || [];
       setTasks(list);
 
@@ -50,11 +55,13 @@ export default function EmployeeTaskDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [claims?.id]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!authLoading && claims?.id) {
+      loadData();
+    }
+  }, [authLoading, claims?.id, loadData]);
 
   const pending = useMemo(
     () => tasks.filter(t => t.status === "PENDING"),
@@ -137,7 +144,9 @@ export default function EmployeeTaskDashboard() {
     DONE: done,
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
+  if (authLoading || loading) {
+    return <p className="p-6">Loading...</p>;
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 p-6">
@@ -150,7 +159,6 @@ export default function EmployeeTaskDashboard() {
           </p>
         </div>
 
-        {/* COLORED TABS */}
         <div className="flex gap-2">
           {(["PENDING", "ACTIVE", "DONE"] as Tab[]).map(tab => (
             <Button
@@ -164,7 +172,6 @@ export default function EmployeeTaskDashboard() {
           ))}
         </div>
 
-        {/* TABLE */}
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

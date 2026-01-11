@@ -22,8 +22,8 @@ export class TaskService {
     return await requestData(`${url}/get-all?project_id=${project_id}`, "GET", undefined, undefined);
   }
 
-   static async getByEmployee(employee_id : string) {
-    return await requestData(`${url}/get-by-employee?employee_id=${employee_id}`, "GET", undefined, undefined);
+   static async getByEmployee(user_id : string) {
+    return await requestData(`${url}/get-by-employee?user_id=${user_id}`, "GET", undefined, undefined);
   }
 
   static async getById(id: string) {

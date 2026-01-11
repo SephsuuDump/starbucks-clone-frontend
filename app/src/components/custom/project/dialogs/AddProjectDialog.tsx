@@ -16,9 +16,9 @@ import { TaskService } from "@/services/project_management/TaskService";
 import { ProcurementHeader } from "@/features/procurement/components/Header";
 
 const dummyEmployees = [
-  { id: "59c9df25-7eb4-4777-b51b-3ad7c52c99e1", name: "John Doe" },
-  { id: "20d5fc1e-6402-4fbb-9e58-3dab35d96628", name: "Sarah Cruz" },
-  { id: "c3d7538c-bb1c-4346-af22-25759558ce6b", name: "Mark Dela Cruz" },
+  { id: "7b88400d-fa75-40eb-967d-219ac63b5963", name: "Liam Paciano" },
+  { id: "fc2b79a5-6c6c-4b06-a9a3-f79dbb27e3af", name: "Emma Narcissa" },
+  { id: "e2f4706e-259c-4cc0-b598-0eaa503887de", name: "Emelia Saturnina" },
 ];
 
 function formatDate(date: Date) {
