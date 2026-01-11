@@ -90,7 +90,7 @@ export default function ProjectManagementAdmin() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white p-8">
+    <div className="min-h-screen w-full bg-slate p-8">
       <div className="max-w-[1200px] mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <div>
