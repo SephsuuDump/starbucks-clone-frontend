@@ -108,9 +108,9 @@ export function SupportCasesPage() {
                     <div className="th">Status</div>
                     <div className="th">Description</div>
                 </div>
-                <div className="w-10 th flex-center">
+                {/* <div className="w-10 th flex-center">
                     <EllipsisVertical className="w-4 h-4" />
-                </div>
+                </div> */}
             </div>
 
             {/* EMPTY */}
@@ -155,7 +155,7 @@ export function SupportCasesPage() {
                         </div>
                     </div>
 
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                         <DropdownMenuTrigger asChild className="w-10 flex-center">
                             <button>
                                 <EllipsisVertical className="w-4 h-4" />
@@ -170,7 +170,7 @@ export function SupportCasesPage() {
                                 Assign
                             </DropdownMenuItem>
                         </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                 </div>
             ))}
 
