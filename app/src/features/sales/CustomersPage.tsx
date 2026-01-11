@@ -43,7 +43,7 @@ export function CustomersPage() {
         useState<"ALL" | "NEW" | "RETURNING">("ALL")
 
     const filteredCustomers = useMemo(() => {
-        return filteredItems.filter(c => {
+        return filteredItems.filter((c: any) => {
             const statusMatch =
                 statusFilter === "ALL" ||
                 (statusFilter === "ACTIVE" && c.is_active) ||

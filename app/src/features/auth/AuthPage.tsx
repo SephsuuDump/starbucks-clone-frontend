@@ -135,6 +135,7 @@ export function AuthPage() {
                             <SelectContent>
                                 <SelectItem value="CUSTOMER">CUSTOMER</SelectItem>
                                 <SelectItem value="SUPPLIER">SUPPLIER</SelectItem>
+                                <SelectItem value="PROJECT MANAGER">PROJECT MANAGER</SelectItem>
                             </SelectContent>
                         </Select>
                     )}

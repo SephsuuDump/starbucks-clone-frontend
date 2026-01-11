@@ -32,7 +32,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-green-50 `}
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 `}
             // style={{ background: 'radial-gradient(circle, hsla(29, 54%, 83%, 1) 0%, hsla(0, 0%, 99%, 1) 100%)'}}
         >
         <Toaster position="top-center" richColors={false} />

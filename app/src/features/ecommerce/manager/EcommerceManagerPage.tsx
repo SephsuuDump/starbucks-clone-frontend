@@ -35,7 +35,7 @@ export function EcommerceManagerPage() {
         { icon: Handshake, count: summary.totalProducts, title: "Total Products", href: '/sales/products' },
         { icon: UsersRound, count: summary.totalCustomers, title: "Total Customers", href: '/sales/customers' },
         { icon: Quote, count: summary.totalQuotations, title: "Quotiations", href: '/sales/quotations' },
-        { icon: Handshake, count: 10, title: "Support Cases", href: '' },
+        { icon: Handshake, count: summary.totalCases, title: "Support Cases", href: '/sales/support-cases' },
         { icon: Scale, count: summary.totalDiscounts, title: "Starbucks Discounts", href: '/sales/discounts' },
         { icon: ChartColumnStacked, count: "————", title: "Reports", href: '/sales/reports' },
     ] 
