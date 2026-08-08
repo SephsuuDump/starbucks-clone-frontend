@@ -55,7 +55,7 @@ export function SupplierPurchasedOrders({ supplierId }: {
             </div>
 
             <div className="grid grid-cols-4 thead">
-                <div className="th">Destination</div>
+                <div className="th">Purchase Order ID</div>
                 <div className="th">Total Ammount</div>
                 <div className="th">Status</div>
                 <div className="th">Request Date</div>

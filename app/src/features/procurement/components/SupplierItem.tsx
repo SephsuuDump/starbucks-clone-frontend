@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatToPeso } from "@/lib/formatter";
-import { Plus } from "lucide-react";
+import { EllipsisVertical, Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CreateSupplierItem } from "../supplier/CreateSupplierItem";
 import { toast } from "sonner";
 import { usePagination } from "@/hooks/use-pagination";
 import { EmptyState } from "@/components/custom/EmptyState";
 import { Pagination } from "@/components/custom/Pagination";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
+import { useAuth } from "@/hooks/use-auth";
+import { useCrudState } from "@/hooks/use-crud-state";
+import { UpdateSupplierItem } from "../supplier/UpdateSupplierItem";
+import { DeleteSupplierItem } from "../supplier/DeleteSupplierItem";
 
 export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier }: {
     open: boolean;
@@ -35,6 +41,8 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
         setOpen(true);
     }
 
+    const { toUpdate, setUpdate, toDelete, setDelete } = useCrudState();
+
     const {
         page,
         size,
@@ -59,11 +67,14 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
                 </Button>
             </div>
 
-            <div className="grid grid-cols-4 thead">
-                <div className="th">SKU ID</div>
-                <div className="th">Supply Name</div>
-                <div className="th">Unit Measurement</div>
-                <div className="th">Unit Cost</div>
+            <div className="thead flex-center-y">
+                <div className="w-full grid grid-cols-4">
+                    <div className="th">SKU ID</div>
+                    <div className="th">Supply Name</div>
+                    <div className="th">Unit Measurement</div>
+                    <div className="th">Unit Cost</div>
+                </div>
+                <div className="th w-10"></div>
             </div>
 
             {paginated.length === 0 && (
@@ -74,11 +85,29 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
             )}
 
             {paginated.map((item: any, _: number) => (
-                <div className="tdata grid grid-cols-4" key={_}>
-                    <div className="td uppercase">{ item.id }</div>
-                    <div className="td">{ item.name }</div>
-                    <div className="td">{ item.description }</div>
-                    <div className="td">{ formatToPeso(item.unit_cost) }</div>
+                <div className="flex-center-y tdata" key={_}>
+                    <div className="w-full grid grid-cols-4">
+                        <div className="td uppercase">{ item.id }</div>
+                        <div className="td">{ item.name }</div>
+                        <div className="td">{ item.description }</div>
+                        <div className="td">{ formatToPeso(item.unit_cost) }</div>
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild className="td w-10 flex-center">
+                            <button>
+                                <EllipsisVertical className="w-4 h-4" />
+                            </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={ () => setUpdate(item) }>
+                                Update
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={ () => setDelete(item) } className="text-red-900">
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             ))}
 
@@ -95,6 +124,20 @@ export function SupplierItem({ supplyItems, open, setOpen, supplierId, supplier 
                     setOpen={ setOpen }
                 />
             }
+
+            {toUpdate && (
+                <UpdateSupplierItem 
+                    toUpdate={ toUpdate }
+                    setUpdate={ setUpdate }
+                />
+            )}
+
+            {toDelete && (
+                <DeleteSupplierItem 
+                    toDelete={ toDelete }
+                    setDelete={ setDelete }
+                />
+            )}
         </>
     );
 }

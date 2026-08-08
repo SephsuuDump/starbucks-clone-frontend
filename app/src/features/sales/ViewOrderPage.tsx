@@ -81,12 +81,20 @@ export function ViewOrderPage() {
                     <h2 className="font-extrabold uppercase text-green-900 mb-2">
                         Order Information
                     </h2>
-                    <Button 
-                        onClick={generateInvoice}
-                        className="!bg-green-900 font-extrabold hover:opacity-90"
-                    >
-                        <File /> GENERATE INVOICE
-                    </Button>
+                    <div className="flex-center-y gap-2">
+                        <Button 
+                            onClick={generateInvoice}
+                            className="!bg-green-900 font-extrabold hover:opacity-90"
+                        >
+                            <File /> GENERATE INVOICE
+                        </Button>
+                        <Button 
+                            onClick={generateInvoice}
+                            className="!bg-green-900 font-extrabold hover:opacity-90"
+                        >
+                            <File /> GENERATE QUOTATION
+                        </Button>
+                    </div>
                 </div>
 
                 <Separator className="mb-3" />

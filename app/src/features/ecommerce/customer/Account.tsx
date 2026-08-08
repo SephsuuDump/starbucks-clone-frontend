@@ -49,8 +49,8 @@ export function CustomerAccount() {
     useEffect(() => {
         if (!orders) return;
         let next = orders;
-        if (tab === 'Pending') next = orders.filter((i) => i.status === 'PENDING');
-        if (tab === 'Completed') next = orders.filter((i) => i.status === 'COMPLETED');
+        if (tab === 'Pending') next = orders.filter((i: any) => i.status === 'PENDING');
+        if (tab === 'Completed') next = orders.filter((i: any) => i.status === 'COMPLETED');
         setFilteredOrders((prev: any) => {
             const prevJson = JSON.stringify(prev);
             const nextJson = JSON.stringify(next);
@@ -105,13 +105,23 @@ export function CustomerAccount() {
                             <img src='/svg/logo2.svg' className="w-30 h-30"/>
                             <div className="text-xl font-extrabold text-green-950 -mt-10">MY STARBUCKS PROFILE</div>
                         </div>
-                        <Button
-                            onClick={ () => setUpdate(data) }
-                            className="bg-green-900! font-extrabold mt-4 h-8 hover:opacity-90"
-                            size="sm"
-                        >
-                            EDIT
-                        </Button>
+                        <div className="flex-center-y gap-2">
+                            <Button
+                                onClick={ () => setUpdate(data) }
+                                className="bg-green-900! font-extrabold mt-4 h-8 hover:opacity-90"
+                                size="sm"
+                            >
+                                EDIT
+                            </Button>
+                            <Link href='http://localhost:3104'>
+                                <Button
+                                    className="bg-red-900! font-extrabold mt-4 h-8 hover:opacity-90"
+                                    size="sm"
+                                >
+                                    REPORT
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                     <div className="text-lg font-bold text-gray-600 mt-4">E-MAIL ADDRESS</div>
                     <div className="text-lg font-bold tracking-wider">{ data.email }</div>
@@ -157,7 +167,7 @@ export function CustomerAccount() {
                     className={`flex-1 flex-center flex-col border bg-slate-50 p-4 rounded-l-xl ${tab === 'Pending' && activeTabCss}`}
                 >
                     <div className="text-6xl font-extrabold scale-x-110">
-                        { orders.filter((i) => i.status === 'PENDING').length }
+                        { orders.filter((i : any) => i.status === 'PENDING').length }
                     </div>
                     <div className={`text-2xl font-extrabold text-green-950 ${tab === 'Pending' && "text-white"}`}>PENDING ORDERS</div>
                 </button>
@@ -166,7 +176,7 @@ export function CustomerAccount() {
                     className={`flex-1 flex-center flex-col border bg-slate-50 p-4 rounded-r-xl ${tab === 'Completed' && activeTabCss}`}
                 >
                     <div className="text-6xl font-extrabold scale-x-110">
-                        { orders.filter((i) => i.status === 'COMPLETED').length }
+                        { orders.filter((i: any) => i.status === 'COMPLETED').length }
                     </div>
                     <div className={`text-2xl font-extrabold text-green-950 ${tab === 'Completed' && "text-white"}`}>COMPLETED ORDERS</div>
                 </button>

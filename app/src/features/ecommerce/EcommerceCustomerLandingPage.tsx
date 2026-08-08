@@ -9,19 +9,19 @@ const branches = [
         id: "032e6326-d605-4e4d-a0de-8c5f62f70774",
         name: "Starbucks Hiraya",
         location: "Tagaytay City, Cavite",
-        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1762350465247.png",
+        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1768178802241.jpg",
     },
     {
         id: "0b0f48e1-6866-4776-9ce9-31309f5f4dbe",
         name: "Starbucks Trece",
         location: "Trece Martires City",
-        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1762008628514.jpg",
+        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1768178849854.jpg",
     },
     {
         id: "7e42ef23-002b-4d39-8d12-9101bbaf2385",
         name: "Starbucks Maple Grove",
         location: "General Trias Cavite",
-        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1762350488991.png",
+        image_url: "https://lawaadzoxwufjbskafzu.supabase.co/storage/v1/object/public/images/location-images/1768178896021.jpg",
     },
 ];
 

@@ -12,4 +12,20 @@ export class SupplyItemService {
             supply
         );
     }
+
+    static async updateSupplyItem(supply: any) {
+        return await requestData(
+            `${url}/update?id=${supply.id}`,
+            'POST',
+            undefined,
+            supply
+        );
+    }
+
+    static async deleteSupplyItem(id: string) {
+        return await requestData(
+            `${url}/delete?id=${id}`,
+            'POST',
+        );
+    }
 }

@@ -17,8 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { SupplierService } from "@/services/procurement/supplierService";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SupplierDetailsHeader({ supplier }: { supplier: Supplier }) {
+    const { claims, loading } = useAuth();
 
     const [open, setOpen] = useState(false);
 
@@ -49,6 +51,7 @@ export function SupplierDetailsHeader({ supplier }: { supplier: Supplier }) {
         }
     }
 
+    if (loading) return <div>Loading</div>
     return (
         <div className="flex gap-4 p-4 bg-slate-50 rounded-md shadow-sm">
 
@@ -82,9 +85,11 @@ export function SupplierDetailsHeader({ supplier }: { supplier: Supplier }) {
                 <div className="mt-4">
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button className="!bg-green-900 text-white hover:opacity-90">
-                                Edit Supplier
-                            </Button>
+                            {claims.role.includes("SUPPLIER") && (
+                                <Button className="!bg-green-900 text-white hover:opacity-90">
+                                    Edit Supplier
+                                </Button>
+                            )}
                         </DialogTrigger>
 
                         <DialogContent className="h-10/11 overflow-y-auto">

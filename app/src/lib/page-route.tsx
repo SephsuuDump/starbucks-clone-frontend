@@ -25,6 +25,10 @@ export const employeeDashboard = [
                 title: "Projects Activity",
                 href: "http://localhost:3100/project/logs",
             },
+            {
+                title: "Task",
+                href: "http://localhost:3100/project/employee/tasks",
+            },
         ]
     },
     {
@@ -43,6 +47,10 @@ export const employeeDashboard = [
             {
                 title: "Request Transfer",
                 href: "http://localhost:3100/inventory/transfer-request",
+            },
+            {
+                title: "Manage Transfer",
+                href: "http://localhost:3100/inventory/manage-transfer",
             },
             {
                 title: "Transfer Request List",
